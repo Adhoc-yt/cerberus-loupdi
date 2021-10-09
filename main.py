@@ -1,7 +1,7 @@
 import random
 import discord
-from discord import client
 from discord.ext import commands
+from discord.utils import get
 
 # Config bot
 intents = discord.Intents.default()
@@ -133,6 +133,22 @@ async def setup(ctx):
             await ctx.send(f"Le rôle {role} a été créé")
     await ctx.send(f"Fin de vérification des rôles")
 
+
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
+    elif message.content in map_departement_region.keys():
+        member = message.author
+        print(message.content)
+        print(map_departement_region.get(message.content))
+        role = get(member.guild.roles, name=map_departement_region.get(message.content))
+        await member.add_roles(role)
+        await message.channel.send("Département détecté - Je te donne le rôle {0}".format(role))
+        await message.author.edit(nick=message.content + ' - ' + message.author.name)
+    else:
+        await message.channel.send("Aucun département détecté... Veuillez réessayer.")
+    return
 
 if __name__ == '__main__':
     discord_key = open("key.txt", "r").read()
