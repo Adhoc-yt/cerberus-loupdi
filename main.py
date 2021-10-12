@@ -10,7 +10,7 @@ bot = commands.Bot(command_prefix="c!", intents=intents)
 
 # Custom parameters
 default_role = "Tunnel de la Taniere"
-expat_role = "Expatriés"
+expat_role_name = "Expatriés"
 ignored_roles = {"Loup", "Modérateur", "intervenant", "Streamer"}
 
 dict_department_region = {
@@ -364,7 +364,8 @@ dict_countries_alphacodes = {
     "ZWE": "Zimbabwe"
 }
 region_roles = set(dict_department_region.values())
-region_roles.add(expat_role)
+region_roles.add(default_role)
+region_roles.add(expat_role_name)
 country_roles = set(dict_countries_alphacodes.values())
 
 
@@ -390,6 +391,14 @@ async def remove_any_previous_role(member: discord.Member):
 @bot.event
 async def on_ready():
     print(f"Bot En ligne - {bot.user}")
+
+
+@bot.event
+async def on_member_join(member: discord.Member):
+    await member.send(f":wave: Bienvenue sur le serveur ! "
+                      "__**Dans le salon principal**__, veuillez entrer votre **numéro de département** Français, "
+                      "ou le code **CIO/Alpha-3** de votre pays si vous n'êtes pas en France.")
+    await member.add_roles(discord.utils.get(member.guild.roles, name=default_role))
 
 
 @bot.command()
@@ -418,25 +427,32 @@ async def on_message(message):
     await bot.process_commands(message)
     member = message.author
 
-    # Ignore if member has a bypass role
-    for role in member.roles:
-        if role.name in ignored_roles:
-            return
     # Ignore if bot
     if member.bot:
         return
 
+    # Ignore if member has a bypass role
+    try:
+        for role in member.roles:
+            if role.name in ignored_roles:
+                return
+    except AttributeError:
+        await message.channel.send("_(Psst, sur le serveur, pas en MP)_")
+        return
+
     # If nickname is invalid - strip from roles and parse message
-    elif not is_valid(member.nick):
+    if not is_valid(member.nick):
         await remove_any_previous_role(member)
+        await member.add_roles(discord.utils.get(member.guild.roles, name=default_role))
 
         # Try to detect department number
         if message.content in dict_department_region.keys():
             member = message.author
             role = get(member.guild.roles, name=dict_department_region.get(message.content))
             await member.add_roles(role)
-            await message.channel.send("Département détecté - Je te donne le rôle {}".format(role))
+            await message.channel.send("Bien compris, merci - Je te donne le rôle {}".format(role))
             await member.edit(nick=message.content + ' - ' + member.name)
+            await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
 
         # Else, try for country code
         elif message.content in dict_countries_alphacodes.keys():
@@ -448,9 +464,10 @@ async def on_message(message):
             if not discord.utils.get(server_roles, name=role):
                 await member.guild.create_role(name=role, colour=discord.Colour(random.randint(0, 0xFFFFFF)))
             await member.add_roles(discord.utils.get(server_roles, name=role),
-                                   discord.utils.get(server_roles, name=expat_role))
+                                   discord.utils.get(server_roles, name=expat_role_name))
             await message.channel.send("Salut l'expatrié ! Je te donne le rôle {}.".format(role))
             await member.edit(nick=message.content + ' - ' + member.name)
+            await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
 
         # Finally, prompt again and harass
         else:
