@@ -111,8 +111,22 @@ map_departement_region = {
     "972": "Régions d'outre-mer",
     "973": "Régions d'outre-mer",
     "974": "Régions d'outre-mer",
-    "976": "Régions d'outre-mer"
+    "976": "Régions d'outre-mer",
+    "expat": "Expatriés"
 }
+
+
+def is_valid(nickname):
+    """
+    Retourne si un pseudo est conforme au format demandé, ou non
+    """
+    print(nickname.split()[0])
+    return nickname.split()[0] in map_departement_region
+
+
+@bot.event
+async def on_ready():
+    print(f"Bot En ligne - {bot.user}")
 
 
 @bot.command()
@@ -120,7 +134,7 @@ map_departement_region = {
 async def setup(ctx):
     """
     %setup - Vérifie et installe les rôles nécessaires au bon fonctionnement du bot.
-    Cette commande ne peut être utilisée que par les Admins (role Discord).
+    Cette commande ne peut être utilisée que par les 'Admin' (role Discord).
     """
     roles_regions = set(map_departement_region.values())
     roles_regions.add(role_invalid_nickname)
@@ -136,19 +150,26 @@ async def setup(ctx):
 
 @bot.event
 async def on_message(message):
+    # Process commands
+    await bot.process_commands(message)
+    # Ignore if bot
     if message.author.bot:
         return
-    elif message.content in map_departement_region.keys():
-        member = message.author
-        print(message.content)
-        print(map_departement_region.get(message.content))
-        role = get(member.guild.roles, name=map_departement_region.get(message.content))
-        await member.add_roles(role)
-        await message.channel.send("Département détecté - Je te donne le rôle {0}".format(role))
-        await message.author.edit(nick=message.content + ' - ' + message.author.name)
-    else:
-        await message.channel.send("Aucun département détecté... Veuillez réessayer.")
-    return
+    # If nickname is invalid - harass
+    elif not is_valid(message.author.nick):
+        if message.content in map_departement_region.keys():
+            member = message.author
+            print(message.content)
+            print(map_departement_region.get(message.content))
+            role = get(member.guild.roles, name=map_departement_region.get(message.content))
+            await member.add_roles(role)
+            await message.channel.send("Département détecté - Je te donne le rôle {}".format(role))
+            await message.author.edit(nick=message.content + ' - ' + message.author.name)
+        else:
+            await message.channel.send("{} Pseudo non valide - "
+                                       "Veuillez entrer votre numéro de département, "
+                                       "ou 'expat' si vous n'êtes pas en France.".format(message.author.mention))
+
 
 if __name__ == '__main__':
     discord_key = open("key.txt", "r").read()
