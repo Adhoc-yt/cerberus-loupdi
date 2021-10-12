@@ -373,10 +373,8 @@ def is_valid(nickname):
     Retourne si un pseudo est conforme au format demandé, ou non
     """
     if nickname:
-        print("Selecting {}".format(nickname.split()[0]))
         return nickname.split()[0] in dict_department_region or nickname.split()[0] in dict_countries_alphacodes
     else:
-        print("No nickname")
         return False
 
 
@@ -385,9 +383,7 @@ async def remove_any_previous_role(member: discord.Member):
     Supprime tout précédent rôle de région au membre s'il en a un
     """
     for role in member.roles:
-        print("remove role {}".format(role))
-        if role in region_roles or role in country_roles:
-            print("Role {} supprimé pour {}".format(role, member.display_name))
+        if role.name in region_roles or role.name in country_roles:
             await member.remove_roles(role)
 
 
@@ -403,26 +399,28 @@ async def setup(ctx):
     %setup - Vérifie et installe les rôles nécessaires au bon fonctionnement du bot.
     Cette commande ne peut être utilisée que par les 'Admin' (role Discord).
     """
-
+    await ctx.send(f":arrow_forward: Début de vérification des rôles")
     for role in region_roles:
-        print("Test role {0}".format(role))
         if discord.utils.get(ctx.guild.roles, name=role):
-            await ctx.send(f"> Le rôle {role} existe déjà")
+            await ctx.send(f":blue_circle: Le rôle **{role}** existe déjà")
         else:
             await ctx.guild.create_role(name=role, colour=discord.Colour(random.randint(0, 0xFFFFFF)))
-            await ctx.send(f"> Le rôle {role} a été créé")
-    await ctx.send(f"--- Fin de vérification des rôles")
+            await ctx.send(f":green_circle: Le rôle **{role}** a été créé")
+    await ctx.send(f":white_check_mark: Fin de vérification des rôles")
 
 
 @bot.event
 async def on_message(message):
+    """
+    A chaque message posté, une vérification s'impose
+    """
     # Process commands
     await bot.process_commands(message)
     member = message.author
 
     # Ignore if member has a bypass role
-    for role in ignored_roles:
-        if discord.utils.get(member.guild.roles, name=role) in member.roles:
+    for role in member.roles:
+        if role.name in ignored_roles:
             return
     # Ignore if bot
     if member.bot:
@@ -431,21 +429,20 @@ async def on_message(message):
     # If nickname is invalid - strip from roles and parse message
     elif not is_valid(member.nick):
         await remove_any_previous_role(member)
+
         # Try to detect department number
         if message.content in dict_department_region.keys():
             member = message.author
-            print(message.content)
-            print(dict_department_region.get(message.content))
             role = get(member.guild.roles, name=dict_department_region.get(message.content))
             await member.add_roles(role)
             await message.channel.send("Département détecté - Je te donne le rôle {}".format(role))
             await member.edit(nick=message.content + ' - ' + member.name)
+
         # Else, try for country code
         elif message.content in dict_countries_alphacodes.keys():
             member = message.author
-            print(message.content)
             role = dict_countries_alphacodes.get(message.content)
-            print("Role pays - {}".format(role))
+
             # If country does not already exists, create it before assigning it
             server_roles = member.guild.roles
             if not discord.utils.get(server_roles, name=role):
@@ -454,11 +451,12 @@ async def on_message(message):
                                    discord.utils.get(server_roles, name=expat_role))
             await message.channel.send("Salut l'expatrié ! Je te donne le rôle {}.".format(role))
             await member.edit(nick=message.content + ' - ' + member.name)
+
         # Finally, prompt again and harass
         else:
             await message.channel.send("{} Pseudo non valide - "
-                                       "Veuillez entrer votre numéro de département Français, "
-                                       "ou le code CIO/Alpha-3 de votre pays "
+                                       "Veuillez entrer votre **numéro de département** Français, "
+                                       "ou le code **CIO/Alpha-3** de votre pays "
                                        "si vous n'êtes pas en France.".format(member.mention))
 
 
