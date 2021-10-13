@@ -423,7 +423,6 @@ async def check_roles(member: discord.Member):
             dept_role = get(member.guild.roles, name=dict_department_region.get(code))
             await member.add_roles(dept_role)
             logging.error("Adding department role '{}' to member '{}'".format(dept_role, member))
-            await member.channel.send("Bien compris, merci - Je te donne le rôle {}".format(dept_role))
 
     elif code in dict_countries_alphacodes:
         logging.error("Checking country code {}".format(code))
