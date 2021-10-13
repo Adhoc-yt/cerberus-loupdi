@@ -5,10 +5,9 @@ from discord.ext import commands
 from discord.utils import get
 
 # Logging
-logging.basicConfig()
-logging.basicConfig(filename='cerberus-diloup.log',
+logging.basicConfig(filename='cerberus_diloup.log',
                     encoding='utf-8',
-                    level=logging.info,
+                    level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 logging.info("Starting Logging...")
@@ -21,7 +20,7 @@ bot = commands.Bot(command_prefix="c!", intents=intents)
 # Custom parameters
 default_role = "Tunnel de la Taniere"
 expat_role_name = "Expatriés"
-ignored_roles = {"Loup", "Modérateur", "intervenant", "Streamer"}
+ignored_roles = {"Loup", "Adminitrateur", "Modérateur", "Intervenant", "Streamer"}
 
 dict_department_region = {
     "01": "Auvergne-Rhône-Alpes",
@@ -542,9 +541,9 @@ async def on_message(message):
 
         # Finally, prompt again and harass
         else:
-            await message.channel.send("{} Veuillez entrer votre **numéro de département** Français, "
-                                       "ou le code **CIO/Alpha-3** de votre pays "
-                                       "si vous n'êtes pas en France.".format(member.mention))
+            await message.author.send("{} - pseudo invalide, Veuillez entrer votre **numéro de département** Français, "
+                                      "ou le code **CIO/Alpha-3** de votre pays "
+                                      "si vous n'êtes pas en France.".format(member.mention))
     else:
         await check_roles(member)
 
