@@ -6,7 +6,7 @@ from discord.utils import get
 
 # Logging
 logging.basicConfig()
-logging.basicConfig(filename='.\\cerberus-diloup.log',
+logging.basicConfig(filename='cerberus-diloup.log',
                     encoding='utf-8',
                     level=logging.info,
                     format='%(asctime)s %(levelname)-8s %(message)s',
