@@ -379,6 +379,11 @@ region_roles.add(expat_role_name)
 country_roles = set(dict_countries_alphacodes.values())
 
 
+def role_exists(rolename, server: discord.Guild):
+    logging.debug("Checking if role '{}' exists".format(rolename))
+    return discord.utils.get(server.roles, name=rolename)
+
+
 def has_valid_nick_and_roles(member: discord.Member):
     """
     Retourne si un pseudo est conforme au format demandé,
@@ -395,14 +400,14 @@ async def assign_country_role(member: discord.Member, role_country):
     Assignation d'un rôle de pays et du rôle Expat.
     Si le rôle de pays n'existe pas, le crée sur le serveur.
     """
-    server_roles = member.guild.roles
-    if not discord.utils.get(server_roles, name=role_country):
+    if not role_exists(role_country, member.guild):
         logging.debug(
             "Country role '{}' for member '{}' does not exist on server, creating it".format(role_country, member))
         await member.guild.create_role(name=role_country, colour=discord.Colour(random.randint(0, 0xFFFFFF)))
-        logging.debug("Adding expat role and country role '{}' to '{}'".format(role_country, member))
-        await member.add_roles(discord.utils.get(server_roles, name=country_roles),
-                               discord.utils.get(server_roles, name=expat_role_name))
+
+    logging.debug("Adding expat role and country role '{}' to '{}'".format(role_country, member))
+    await member.add_roles(discord.utils.get(member.guild.roles, name=role_country))
+    await member.add_roles(discord.utils.get(member.guild.roles, name=expat_role_name))
 
 
 async def check_roles(member: discord.Member):
@@ -427,7 +432,7 @@ async def check_roles(member: discord.Member):
     elif code in dict_countries_alphacodes:
         logging.debug("Checking country code {}".format(code))
         role_country = dict_countries_alphacodes.get(code)
-        if discord.utils.get(server_roles, name=role_country) \
+        if role_exists(role_country, member.guild) \
                 and discord.utils.get(server_roles, name=expat_role_name) in member.roles \
                 and discord.utils.get(server_roles, name=role_country) in member.roles:
             logging.debug("Country role {} exists, and is properly assigned "
@@ -470,7 +475,7 @@ async def setup(ctx):
     """
     await ctx.send(f":arrow_forward: Début de vérification des rôles")
     for role in region_roles:
-        if discord.utils.get(ctx.guild.roles, name=role):
+        if role_exists(role, ctx.guild):
             await ctx.send(f":blue_circle: Le rôle **{role}** existe déjà")
         else:
             await ctx.guild.create_role(name=role, colour=discord.Colour(random.randint(0, 0xFFFFFF)))
@@ -515,10 +520,10 @@ async def on_message(message):
         # Try to detect department number
         if message.content in dict_department_region.keys():
             member = message.author
-            role = get(member.guild.roles, name=dict_department_region.get(message.content))
+            role = discord.utils.get(member.guild.roles, name=dict_department_region.get(message.content))
             await member.add_roles(role)
             logging.debug("Adding department role '{}' to member '{}'".format(role, member))
-            await message.channel.send("Bien compris, merci - Je te donne le rôle {}".format(role))
+            await message.channel.send("Bien compris, merci - Je donne le rôle {}".format(role))
             await member.edit(nick=message.content + ' - ' + member.name)
             await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
             logging.debug("- Removing default role '{}' from member '{}'".format(default_role, member))
@@ -529,9 +534,11 @@ async def on_message(message):
             logging.debug("Found a matching country code '{}'".format(country_code))
             member = message.author
             role = dict_countries_alphacodes.get(country_code)
-            await assign_country_role(member, role_country=dict_countries_alphacodes.get(country_code))
             logging.debug("Adding country role '{}' and '{}' to member '{}'".format(role, expat_role_name, member))
-            await message.channel.send("Salut l'expatrié ! Je te donne le rôle {}.".format(role))
+            await message.channel.send("Salut l'expatrié ! Je donne le rôle {}.".format(role))
+            await member.edit(nick=country_code + ' - ' + member.name)
+            await assign_country_role(member, role_country=dict_countries_alphacodes.get(country_code))
+            await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
 
         # Finally, prompt again and harass
         else:
@@ -540,6 +547,7 @@ async def on_message(message):
                                        "si vous n'êtes pas en France.".format(member.mention))
     else:
         await check_roles(member)
+
 
 if __name__ == '__main__':
     discord_key = open("key.txt", "r").read()
