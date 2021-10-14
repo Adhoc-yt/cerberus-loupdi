@@ -375,7 +375,8 @@ dict_countries_alphacodes = {
     "YEM": "Yemen",
     "ZAF": "South Africa",
     "ZMB": "Zambia",
-    "ZWE": "Zimbabwe"
+    "ZWE": "Zimbabwe",
+    "QUE": "Québec"
 }
 region_roles = set(dict_department_region.values())
 region_roles.add(default_role)
