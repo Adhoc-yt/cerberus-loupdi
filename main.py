@@ -474,10 +474,7 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member: discord.Member):
-    await member.send(f":wave: Bienvenue sur le serveur ! "
-                      "Si vous n'avez pas déjà un code pays ou un numéro de département dans votre pseudo, "
-                      "__**dans le salon principal**__, veuillez entrer votre **numéro de département** Français, "
-                      "ou le code **CIO/Alpha-3** de votre pays si vous n'êtes pas en France.")
+    await member.send(f":wave: Bienvenue sur le serveur ! ")
     await member.add_roles(discord.utils.get(member.guild.roles, name=default_role))
 
 
