@@ -510,7 +510,7 @@ async def scan(ctx):
     members_scanned_count = 0
     invalid_members_count = 0
 
-    await ctx.send(f"{} membres trouvés - analyse en cours...".format(len(members_list))
+    await ctx.send("{} membres trouvés - analyse en cours...".format(len(members_list)))
     for member in members_list:
         if not await check_roles(member):
             invalid_members_count += 1
