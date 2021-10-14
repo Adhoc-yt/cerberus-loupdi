@@ -518,6 +518,21 @@ async def scan(ctx):
                    "- {} membres scannés et {} membres corrigés".format(members_scanned_count, invalid_members_count))
 
 
+@bot.command()
+@commands.has_any_role(admin_role, 'Modérateur')
+async def scan_member(ctx, member: discord.Member):
+    """
+    c!scan - Vérifie et actualise les rôles d'un membre particulier du serveur.
+    Cette commande ne peut être utilisée que par les Admins/Modos (role Discord).
+    """
+    await ctx.send(":arrow_forward: Début de vérification de {}...".format(member))
+    if await check_roles(member):
+        await ctx.send("Pseudo et rôles validés")
+    else:
+        await ctx.send("Membre corrigé")
+    await ctx.send(":white_check_mark: Fin de vérification pour {}.".format(member))
+
+
 @bot.event
 async def on_message(message):
     """
@@ -576,6 +591,8 @@ async def on_message(message):
 
         # Finally, prompt again and harass
         else:
+            await message.channel.send("{} - veuillez entrer votre numéro de département ou code pays "
+                                       "(exemples en Messages Privés)".format(message.author))
             await message.author.send("Salut {} :wave: ! Si vous recevez ce message, c'est que votre pseudo a un format"
                                       " invalide - Sur le serveur, veuillez taper un message contenant seulement votre "
                                       "**numéro de département** Français ou le code **CIO/Alpha-3** de votre pays "
