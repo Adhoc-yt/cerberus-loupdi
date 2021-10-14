@@ -17,6 +17,7 @@ bot = commands.Bot(command_prefix="c!", intents=intents)
 default_role = "Tunnel de la Taniere"
 expat_role_name = "Expatriés"
 ignored_roles = {"Loup", "Adminitrateur", "Modérateur", "Intervenant", "Streamer"}
+admin_role = "Adminitrateur"
 
 dict_department_region = {
     "01": "Auvergne-Rhône-Alpes",
@@ -470,7 +471,7 @@ async def on_member_join(member: discord.Member):
 
 
 @bot.command()
-@commands.has_role('Admin')
+@commands.has_role(admin_role)
 async def setup(ctx):
     """
     c!setup - Vérifie et installe les rôles nécessaires au bon fonctionnement du bot.
