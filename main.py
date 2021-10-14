@@ -410,6 +410,7 @@ async def assign_country_role(member: discord.Member, role_country):
         await member.guild.create_role(name=role_country, colour=discord.Colour(random.randint(0, 0xFFFFFF)))
 
     print("Adding expat role and country role '{}' to '{}'".format(role_country, member))
+    await remove_any_previous_role(member)
     await member.add_roles(discord.utils.get(member.guild.roles, name=role_country))
     await member.add_roles(discord.utils.get(member.guild.roles, name=expat_role_name))
     await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
