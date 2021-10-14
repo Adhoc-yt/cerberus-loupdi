@@ -412,6 +412,8 @@ async def assign_country_role(member: discord.Member, role_country):
     print("Adding expat role and country role '{}' to '{}'".format(role_country, member))
     await member.add_roles(discord.utils.get(member.guild.roles, name=role_country))
     await member.add_roles(discord.utils.get(member.guild.roles, name=expat_role_name))
+    if default_role in member.roles:
+        await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
 
 
 async def check_roles(member: discord.Member):
@@ -542,7 +544,6 @@ async def on_message(message):
             await message.channel.send("Salut l'expatrié ! Je donne le rôle {}.".format(role))
             await member.edit(nick=country_code + ' - ' + member.name)
             await assign_country_role(member, role_country=dict_countries_alphacodes.get(country_code))
-            await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
 
         # Finally, prompt again and harass
         else:
