@@ -418,6 +418,10 @@ async def assign_country_role(member: discord.Member, role_country):
 
 
 async def check_roles(member: discord.Member):
+    """
+    Retourne si les roles pour un membre sont corrects ou non
+    ET prend les actions nécessaires pour rétablir les rôles
+    """
     # If no nickname, using name
     nickname = member.display_name
 
@@ -430,11 +434,13 @@ async def check_roles(member: discord.Member):
         check_dept_role = discord.utils.get(server_roles, name=role_dept)
         if check_dept_role in member.roles:
             print("Department role '{}' OK for member '{}'".format(check_dept_role, member))
+            return True
         else:
             await remove_any_previous_role(member)
             dept_role = get(member.guild.roles, name=dict_department_region.get(code))
             await member.add_roles(dept_role)
             print("Adding department role '{}' to member '{}'".format(dept_role, member))
+            return False
 
     elif code in dict_countries_alphacodes:
         print("Checking country code {}".format(code))
@@ -444,9 +450,11 @@ async def check_roles(member: discord.Member):
                 and discord.utils.get(server_roles, name=role_country) in member.roles:
             print("Country role {} exists, and is properly assigned "
                   "to {} with expat role".format(role_country, member))
+            return True
         else:
             print("Checking -> assign role {}".format(role_country))
             await assign_country_role(member, role_country)
+            return False
 
 
 async def remove_any_previous_role(member: discord.Member):
@@ -478,9 +486,9 @@ async def on_member_join(member: discord.Member):
 async def setup(ctx):
     """
     c!setup - Vérifie et installe les rôles nécessaires au bon fonctionnement du bot.
-    Cette commande ne peut être utilisée que par les 'Admin' (role Discord).
+    Cette commande ne peut être utilisée que par les Admins (role Discord).
     """
-    await ctx.send(f":arrow_forward: Début de vérification des rôles")
+    await ctx.send(f":arrow_forward: Début de vérification des rôles...")
     for role in region_roles:
         if role_exists(role, ctx.guild):
             await ctx.send(f":blue_circle: Le rôle **{role}** existe déjà")
@@ -488,6 +496,29 @@ async def setup(ctx):
             await ctx.guild.create_role(name=role, colour=discord.Colour(random.randint(0, 0xFFFFFF)))
             await ctx.send(f":green_circle: Le rôle **{role}** a été créé")
     await ctx.send(f":white_check_mark: Fin de vérification des rôles")
+
+
+@bot.command()
+@commands.has_any_role(admin_role, 'Modérateur')
+async def scan(ctx):
+    """
+    c!scan - Vérifie et actualise les rôles de tous les membres d'un serveur.
+    Cette commande ne peut être utilisée que par les Admins/Modos (role Discord).
+    """
+    members_list = ctx.guild.members
+    await ctx.send(f":arrow_forward: Début de vérification des membres...")
+    members_scanned_count = 0
+    invalid_members_count = 0
+
+    await ctx.send(f"{} membres trouvés - analyse en cours...".format(len(members_list))
+    for member in members_list:
+        if not await check_roles(member):
+            invalid_members_count += 1
+
+        members_scanned_count += 1
+
+    await ctx.send(f":white_check_mark: Fin de vérification des membres "
+                   "- {} membres scannés et {} membres corrigés".format(members_scanned_count, invalid_members_count))
 
 
 @bot.event
@@ -548,9 +579,13 @@ async def on_message(message):
 
         # Finally, prompt again and harass
         else:
-            await message.author.send("{} - pseudo invalide, Veuillez entrer votre **numéro de département** Français, "
-                                      "ou le code **CIO/Alpha-3** de votre pays "
-                                      "si vous n'êtes pas en France.".format(member.mention))
+            await message.author.send("Salut {} :wave: ! Si vous recevez ce message, c'est que votre pseudo a un format"
+                                      " invalide - Sur le serveur, veuillez taper un message contenant seulement votre "
+                                      "**numéro de département** Français ou le code **CIO/Alpha-3** de votre pays "
+                                      "si vous n'êtes pas en France (Par ex, un message contenant seulement "
+                                      "'51' pour le département 51 ou 'ITA' pour l'Italie).".format(member.mention))
+            await message.author.send("> Exemples de pseudos **invalides**: '34Marcel', 'Algerie Abdel', 'BobDu987'")
+            await message.author.send("> Exemples de pseudos **valides**: '34 - Marcel', 'DZA Abdel', '987 TahitiBob'")
     else:
         await check_roles(member)
 
