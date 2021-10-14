@@ -119,7 +119,15 @@ dict_department_region = {
     "972": "Régions d'outre-mer",
     "973": "Régions d'outre-mer",
     "974": "Régions d'outre-mer",
-    "976": "Régions d'outre-mer"
+    "975": "Régions d'outre-mer",
+    "976": "Régions d'outre-mer",
+    "977": "Régions d'outre-mer",
+    "978": "Régions d'outre-mer",
+    "984": "Régions d'outre-mer",
+    "986": "Régions d'outre-mer",
+    "987": "Régions d'outre-mer",
+    "988": "Régions d'outre-mer",
+    "989": "Régions d'outre-mer"
 }
 dict_countries_alphacodes = {
     "ABW": "Aruba",
@@ -431,7 +439,7 @@ async def check_roles(member: discord.Member):
                 and discord.utils.get(server_roles, name=expat_role_name) in member.roles \
                 and discord.utils.get(server_roles, name=role_country) in member.roles:
             print("Country role {} exists, and is properly assigned "
-                          "to {} with expat role".format(role_country, member))
+                  "to {} with expat role".format(role_country, member))
         else:
             print("Checking -> assign role {}".format(role_country))
             await assign_country_role(member, role_country)
