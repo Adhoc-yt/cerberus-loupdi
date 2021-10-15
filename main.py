@@ -592,7 +592,7 @@ async def on_message(message):
         # Finally, prompt again and harass
         else:
             await message.channel.send("{} - veuillez entrer votre numéro de département ou code pays "
-                                       "(exemples en Messages Privés)".format(message.author))
+                                       "(exemples en Messages Privés)".format(message.author.mention))
             await message.author.send("Salut {} :wave: ! Si vous recevez ce message, c'est que votre pseudo a un format"
                                       " invalide - Sur le serveur, veuillez taper un message contenant seulement votre "
                                       "**numéro de département** Français ou le code **CIO/Alpha-3** de votre pays "
