@@ -529,7 +529,7 @@ async def scan_member(ctx, member: discord.Member):
     if await check_roles(member):
         await ctx.send("Pseudo et rôles validés")
     else:
-        await ctx.send("Membre corrigé")
+        await ctx.send("Pseudo invalide ou rôles invalides - tentative de correction")
     await ctx.send(":white_check_mark: Fin de vérification pour {}.".format(member))
 
 
