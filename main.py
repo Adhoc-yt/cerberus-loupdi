@@ -405,7 +405,9 @@ def has_bypass_role(member: discord.Member):
     Supprime tout précédent rôle de région au membre s'il en a un
     """
     for role in member.roles:
-        if role in ignored_roles:
+        print("- verifying if '{}' is a bypass role...".format(role))
+        if role.name in ignored_roles:
+            print("Bypass role found : '{}'. Skipping verification.".format(role))
             return True
 
     return False
@@ -518,7 +520,7 @@ async def setup(ctx):
 
 @bot.command()
 @commands.has_any_role(admin_role, 'Modérateur')
-async def scan(ctx: object):
+async def scan(ctx):
     """
     c!scan - Vérifie et actualise les rôles de tous les membres d'un serveur.
     Cette commande ne peut être utilisée que par les Admins/Modos (role Discord).
@@ -586,11 +588,8 @@ async def on_message(message):
 
     # Ignore if member has a bypass role
     try:
-        for role in member.roles:
-            print("- verifying if '{}' is a bypass role...".format(role))
-            if role.name in ignored_roles:
-                print("Bypass role found : '{}'. Skipping verification.".format(role))
-                return
+        if has_bypass_role(member):
+            return
     except AttributeError:
         print("Message was sent as a DM.")
         await message.channel.send("_(Psst, je ne réponds pas aux MP, rendez-vous sur le serveur)_")
