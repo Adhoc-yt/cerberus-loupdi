@@ -400,6 +400,17 @@ def has_valid_nick(member: discord.Member):
     return code in dict_department_region or code in dict_countries_alphacodes
 
 
+def has_bypass_role(member: discord.Member):
+    """
+    Supprime tout précédent rôle de région au membre s'il en a un
+    """
+    for role in member.roles:
+        if role in ignored_roles:
+            return True
+
+    return False
+
+
 async def assign_country_role(member: discord.Member, role_country):
     """
     Assignation d'un rôle de pays et du rôle Expat.
@@ -422,6 +433,10 @@ async def check_roles(member: discord.Member):
     Retourne si les roles pour un membre sont corrects ou non
     ET prend les actions nécessaires pour rétablir les rôles
     """
+    # Extra safety for bypass
+    if has_bypass_role(member):
+        return True
+
     if not has_valid_nick(member):
         print("Chk_roles - Invalid nickname for '{}'".format(member))
         await remove_any_previous_role(member)
@@ -512,11 +527,14 @@ async def scan(ctx: object):
     await ctx.send(f":arrow_forward: Début de vérification des membres...")
     members_scanned_count = 0
     corrected_members_count = 0
+    bypass_members_count = 0
     invalid_members_count = 0
 
     await ctx.send("{} membres trouvés - analyse en cours...".format(len(members_list)))
     for member in members_list:
-        if not await check_roles(member):
+        if has_bypass_role(member):
+            bypass_members_count += 1
+        elif not await check_roles(member):
             if has_valid_nick(member):
                 corrected_members_count += 1
             else:
@@ -525,6 +543,7 @@ async def scan(ctx: object):
         members_scanned_count += 1
 
     await ctx.send("- {} membres scannés ".format(members_scanned_count))
+    await ctx.send("- {} membres ignorés (rôles spéciaux) ".format(corrected_members_count))
     await ctx.send("- {} rôles corrigés ".format(corrected_members_count))
     await ctx.send("- {} pseudos invalides".format(invalid_members_count))
     await ctx.send(":white_check_mark: Fin de vérification des membres ")
