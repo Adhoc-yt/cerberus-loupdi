@@ -558,7 +558,10 @@ async def scan_member(ctx, member: discord.Member):
     """
     await ctx.send(":arrow_forward: Début de vérification de {}...".format(member))
     if await check_roles(member):
-        await ctx.send("Pseudo et rôles validés")
+        if has_bypass_role(member):
+            await ctx.send("Rôle spécial trouvé - ignoré")
+        else:
+            await ctx.send("Pseudo et rôles validés")
     elif has_valid_nick(member):
         await ctx.send("Rôles corrigés")
     else:
