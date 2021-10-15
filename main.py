@@ -389,7 +389,7 @@ def role_exists(rolename, server: discord.Guild):
     return discord.utils.get(server.roles, name=rolename)
 
 
-def has_valid_nick_and_roles(member: discord.Member):
+def has_valid_nick(member: discord.Member):
     """
     Retourne si un pseudo est conforme au format demandé,
     ET si les bons rôles sont associés au membre
@@ -422,9 +422,15 @@ async def check_roles(member: discord.Member):
     Retourne si les roles pour un membre sont corrects ou non
     ET prend les actions nécessaires pour rétablir les rôles
     """
+    if not has_valid_nick(member):
+        print("Chk_roles - Invalid nickname for '{}'".member)
+        await remove_any_previous_role(member)
+        print("Chk_roles - Default role for '{}'".member)
+        await member.add_roles(get(member.guild.roles, name=default_role))
+        return False
+
     # If no nickname, using name
     nickname = member.display_name
-
     code = nickname.split()[0]
     print("Checking roles - testing code {}".format(code))
     server_roles = member.guild.roles
@@ -497,7 +503,7 @@ async def setup(ctx):
 
 @bot.command()
 @commands.has_any_role(admin_role, 'Modérateur')
-async def scan(ctx):
+async def scan(ctx: object):
     """
     c!scan - Vérifie et actualise les rôles de tous les membres d'un serveur.
     Cette commande ne peut être utilisée que par les Admins/Modos (role Discord).
@@ -505,17 +511,23 @@ async def scan(ctx):
     members_list = ctx.guild.members
     await ctx.send(f":arrow_forward: Début de vérification des membres...")
     members_scanned_count = 0
+    corrected_members_count = 0
     invalid_members_count = 0
 
     await ctx.send("{} membres trouvés - analyse en cours...".format(len(members_list)))
     for member in members_list:
         if not await check_roles(member):
-            invalid_members_count += 1
+            if has_valid_nick(member):
+                corrected_members_count += 1
+            else:
+                invalid_members_count += 1
 
         members_scanned_count += 1
 
-    await ctx.send(f":white_check_mark: Fin de vérification des membres "
-                   "- {} membres scannés et {} membres corrigés".format(members_scanned_count, invalid_members_count))
+    await ctx.send("- {} membres scannés ".format(members_scanned_count))
+    await ctx.send("- {} rôles corrigés ".format(corrected_members_count))
+    await ctx.send("- {} pseudos invalides".format(invalid_members_count))
+    await ctx.send(":white_check_mark: Fin de vérification des membres ")
 
 
 @bot.command()
@@ -528,8 +540,10 @@ async def scan_member(ctx, member: discord.Member):
     await ctx.send(":arrow_forward: Début de vérification de {}...".format(member))
     if await check_roles(member):
         await ctx.send("Pseudo et rôles validés")
+    elif has_valid_nick(member):
+        await ctx.send("Rôles corrigés")
     else:
-        await ctx.send("Pseudo invalide ou rôles invalides - tentative de correction")
+        await ctx.send("Pseudo invalide - Rôle par défaut attribué")
     await ctx.send(":white_check_mark: Fin de vérification pour {}.".format(member))
 
 
@@ -561,7 +575,7 @@ async def on_message(message):
         return
 
     # If nickname is invalid or if roles are not correctly assigned - strip from roles and parse message
-    if not has_valid_nick_and_roles(member):
+    if not has_valid_nick(member):
         print("'{}' is not a valid nickname.".format(member.nick))
         await remove_any_previous_role(member)
         await member.add_roles(discord.utils.get(member.guild.roles, name=default_role))
