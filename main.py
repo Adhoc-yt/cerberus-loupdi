@@ -423,9 +423,9 @@ async def check_roles(member: discord.Member):
     ET prend les actions nécessaires pour rétablir les rôles
     """
     if not has_valid_nick(member):
-        print("Chk_roles - Invalid nickname for '{}'".member)
+        print("Chk_roles - Invalid nickname for '{}'".format(member))
         await remove_any_previous_role(member)
-        print("Chk_roles - Default role for '{}'".member)
+        print("Chk_roles - Default role for '{}'".format(member))
         await member.add_roles(get(member.guild.roles, name=default_role))
         return False
 
