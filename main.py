@@ -522,7 +522,7 @@ async def scan(ctx):
 @commands.has_any_role(admin_role, 'Modérateur')
 async def scan_member(ctx, member: discord.Member):
     """
-    c!scan - Vérifie et actualise les rôles d'un membre particulier du serveur.
+    c!scan_member - Vérifie et actualise les rôles d'un membre particulier du serveur.
     Cette commande ne peut être utilisée que par les Admins/Modos (role Discord).
     """
     await ctx.send(":arrow_forward: Début de vérification de {}...".format(member))
