@@ -627,9 +627,9 @@ async def on_message(message):
 
         # Else, check if zip code
         elif re.match('[0-9]{5}$', message.content):
-            dept_guess = re.split("[0-9]{2}", message.content)[0].strip()
+            dept_guess = message.content[:2]
             await message.channel.send("Je n'ai pas demandé un code postal, j'ai demandé un numéro de département. Si "
-                                       "votre département est '{}'.format(dept_guess) - veuillez taper '{}', "
+                                       "votre département est '{}' - veuillez taper '{}', "
                                        "merci.".format(dept_guess, dept_guess))
 
         # Finally, prompt again and harass
