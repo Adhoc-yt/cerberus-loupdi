@@ -547,7 +547,7 @@ async def scan(ctx):
 
     await ctx.send("- {} membres scannés ".format(members_scanned_count))
     await ctx.send("- {} membres ignorés (rôles spéciaux) ".format(corrected_members_count))
-    await ctx.send("- {} rôles corrigés ".format(corrected_members_count))
+    await ctx.send("- {} rôles corrigés ".format(bypass_members_count))
     await ctx.send("- {} pseudos invalides".format(invalid_members_count))
     await ctx.send(":white_check_mark: Fin de vérification des membres ")
 
