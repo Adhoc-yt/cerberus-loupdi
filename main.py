@@ -1,6 +1,7 @@
 import random
 import discord
 import logging
+import re
 from discord.ext import commands
 from discord.utils import get
 
@@ -624,9 +625,16 @@ async def on_message(message):
             await member.edit(nick=country_code + ' - ' + member.name)
             await assign_country_role(member, role_country=dict_countries_alphacodes.get(country_code))
 
+        # Else, check if zip code
+        elif re.match('[0-9]{5}$', message.content):
+            dept_guess = re.split("[0-9]{2}", message.content)[0].strip()
+            await message.channel.send("Je n'ai pas demandé un code postal, j'ai demandé un numéro de département. Si "
+                                       "votre département est '{}'.format(dept_guess) - veuillez taper '{}', "
+                                       "merci.".format(dept_guess, dept_guess))
+
         # Finally, prompt again and harass
         else:
-            await message.channel.send("{} - veuillez entrer votre numéro de département ou code pays "
+            await message.channel.send("{} - SVP, veuillez entrer votre numéro de département ou code pays "
                                        "(exemples en Messages Privés)".format(message.author.mention))
             await message.author.send("Salut {} :wave: ! Si vous recevez ce message, c'est que votre pseudo a un format"
                                       " invalide - Sur le serveur, veuillez taper un message contenant seulement votre "
