@@ -425,7 +425,7 @@ def has_bypass_role(member: discord.Member):
 
 
 def detect_url(message: discord.Message):
-    return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(\), ]|%[0-9a-fA-F][0-9a-fA-F])+', message.content)
+    return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(), ]|%[0-9a-fA-F][0-9a-fA-F])+', message.content)
 
 
 async def assign_country_role(member: discord.Member, role_country):
@@ -685,8 +685,7 @@ async def on_message(message):
         return
 
     await nickname_actions(message)
-    if message.channel not in forbidden_links_channels:
-        await link_actions(message)
+    await link_actions(message)
 
 
 if __name__ == '__main__':
