@@ -17,8 +17,26 @@ bot = commands.Bot(command_prefix="c!", intents=intents)
 # Custom parameters
 default_role = "Tunnel de la Taniere"
 expat_role_name = "Expatriés"
-ignored_roles = {"Loup", "Adminitrateur", "Modérateur", "Intervenant", "Streamer"}
 admin_role = "Adminitrateur"
+ignored_roles = {
+    admin_role,
+    "Loup",
+    "Modérateur",
+    "Intervenant",
+    "Streamer"
+}
+authorized_links_channels = {
+    "partage-de-vidéos",
+    "partage-articles-de-presse",
+    "section-pdf_-littérature",
+    "liens-discord-et-blogs-telegram",
+    "solidarite",
+    "autonomie",
+    "sante",
+    "informatique",
+    "musique"
+    "humour"
+}
 
 dict_department_region = {
     "01": "Auvergne-Rhône-Alpes",
@@ -414,6 +432,10 @@ def has_bypass_role(member: discord.Member):
     return False
 
 
+def detect_url(message: discord.Message):
+    return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(\), ]|%[0-9a-fA-F][0-9a-fA-F])+', message.content)
+
+
 async def assign_country_role(member: discord.Member, role_country):
     """
     Assignation d'un rôle de pays et du rôle Expat.
@@ -489,6 +511,101 @@ async def remove_any_previous_role(member: discord.Member):
         if role.name in region_roles or role.name in country_roles:
             print("- Removing role '{}' from member '{}'".format(role, member))
             await member.remove_roles(role)
+
+
+async def nickname_actions(message: discord.Message):
+    """
+    A chaque message posté, une vérification s'impose
+    """
+    member = message.author
+    print("### '{}': '{}'".format(member, message.content))
+    # Process commands
+    await bot.process_commands(message)
+
+    # Ignore if bot
+    if member.bot:
+        print("{} is a bot, ignoring".format(member))
+        return
+
+    # Ignore if member has a bypass role
+    try:
+        if has_bypass_role(member):
+            return
+    except AttributeError:
+        print("Message was sent as a DM.")
+        await message.channel.send("_(Psst, je ne réponds pas aux MP, rendez-vous sur le serveur)_")
+        return
+
+    # If nickname is invalid or if roles are not correctly assigned - strip from roles and parse message
+    if not has_valid_nick(member):
+        print("'{}' is not a valid nickname.".format(member.nick))
+        await remove_any_previous_role(member)
+        await member.add_roles(discord.utils.get(member.guild.roles, name=default_role))
+        print("Adding role '{}' to member '{}'".format(default_role, member))
+
+        # Try to detect department number
+        if message.content in dict_department_region.keys():
+            member = message.author
+            role = discord.utils.get(member.guild.roles, name=dict_department_region.get(message.content))
+            await member.add_roles(role)
+            print("Adding department role '{}' to member '{}'".format(role, member))
+            await message.channel.send("Bien compris, merci - Je donne le rôle {}".format(role))
+            await member.edit(nick=message.content + ' - ' + member.name)
+            await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
+            print("- Removing default role '{}' from member '{}'".format(default_role, member))
+
+        # Else, try for country code
+        elif message.content.upper() in dict_countries_alphacodes.keys():
+            country_code = message.content.upper()
+            print("Found a matching country code '{}'".format(country_code))
+            member = message.author
+            role = dict_countries_alphacodes.get(country_code)
+            print("Adding country role '{}' and '{}' to member '{}'".format(role, expat_role_name, member))
+            await message.channel.send("Salut l'expatrié ! Je donne le rôle {}.".format(role))
+            await member.edit(nick=country_code + ' - ' + member.name)
+            await assign_country_role(member, role_country=dict_countries_alphacodes.get(country_code))
+
+        # Else, check if zip code
+        elif re.match('[0-9]{5}$', message.content):
+            dept_guess = message.content[:2]
+            await message.channel.send("Je n'ai pas demandé un code postal, j'ai demandé un numéro de département. Si "
+                                       "votre département est '{}' - veuillez taper '{}', "
+                                       "merci.".format(dept_guess, dept_guess))
+
+        # Finally, prompt again and harass
+        else:
+            await message.channel.send("{} - SVP, veuillez entrer votre numéro de département ou code pays "
+                                       "(exemples en Messages Privés), et rien d'autre.".format(message.author.mention))
+            await message.channel.send("Tant que vous n'aurez pas de pseudo valide, seule la modération peut vous lire,"
+                                       " et vous n'avez pas accès au reste des salons. Si vous restez trop longtemps "
+                                       "avec un pseudo invalide, vous serez éjecté du serveur.")
+            await message.author.send("Salut {} :wave: ! Si vous recevez ce message, c'est que votre pseudo a un format"
+                                      " invalide - Sur le serveur, veuillez taper un message contenant seulement votre "
+                                      "**numéro de département** Français ou le code **CIO/Alpha-3** de votre pays "
+                                      "si vous n'êtes pas en France (Par ex, un message contenant seulement "
+                                      "'51' pour le département 51 ou 'ITA' pour l'Italie).".format(member.mention))
+            await message.author.send("> Exemples de pseudos **invalides**: '34Marcel', 'Algerie Abdel', 'BobDu987'")
+            await message.author.send("> Exemples de pseudos **valides**: '34 - Marcel', 'DZA Abdel', '987 TahitiBob'")
+    else:
+        await check_roles(member)
+
+
+async def link_actions(message: discord.Message):
+    if detect_url(message):
+        print("Link detected in '{}'".format(message.channel))
+        if message.channel in authorized_links_channels:
+            print("Link is posted in whitelisted channel - Skipping")
+        elif has_bypass_role(message.author):
+            print("Link has been posted by someone with a bypass role - Skipping")
+        else:
+            await message.delete()
+            await message.channel.send("{}, pas de liens dans ce salon "
+                                       "- message supprimé.".format(message.author.mention))
+            await message.author.send("Pour info, la règle concernant les liens a été établie le 5 novembre 2020, "
+                                      "https://discord.com/channels/632963159619141653/774140334006730782"
+                                      "/774141383803273269 - et cette règle a du être renforcée le 19 mai 2021, "
+                                      "https://discord.com/channels/632963159619141653/774140334006730782"
+                                      "/844824472153489458 - Merci de lire le règlement et de jouer le jeu ! :wave:")
 
 
 @bot.event
@@ -574,77 +691,8 @@ async def scan_member(ctx, member: discord.Member):
 
 @bot.event
 async def on_message(message):
-    """
-    A chaque message posté, une vérification s'impose
-    """
-    member = message.author
-    print("### '{}': '{}'".format(member, message.content))
-    # Process commands
-    await bot.process_commands(message)
-
-    # Ignore if bot
-    if member.bot:
-        print("{} is a bot, ignoring".format(member))
-        return
-
-    # Ignore if member has a bypass role
-    try:
-        if has_bypass_role(member):
-            return
-    except AttributeError:
-        print("Message was sent as a DM.")
-        await message.channel.send("_(Psst, je ne réponds pas aux MP, rendez-vous sur le serveur)_")
-        return
-
-    # If nickname is invalid or if roles are not correctly assigned - strip from roles and parse message
-    if not has_valid_nick(member):
-        print("'{}' is not a valid nickname.".format(member.nick))
-        await remove_any_previous_role(member)
-        await member.add_roles(discord.utils.get(member.guild.roles, name=default_role))
-        print("Adding role '{}' to member '{}'".format(default_role, member))
-
-        # Try to detect department number
-        if message.content in dict_department_region.keys():
-            member = message.author
-            role = discord.utils.get(member.guild.roles, name=dict_department_region.get(message.content))
-            await member.add_roles(role)
-            print("Adding department role '{}' to member '{}'".format(role, member))
-            await message.channel.send("Bien compris, merci - Je donne le rôle {}".format(role))
-            await member.edit(nick=message.content + ' - ' + member.name)
-            await member.remove_roles(discord.utils.get(member.guild.roles, name=default_role))
-            print("- Removing default role '{}' from member '{}'".format(default_role, member))
-
-        # Else, try for country code
-        elif message.content.upper() in dict_countries_alphacodes.keys():
-            country_code = message.content.upper()
-            print("Found a matching country code '{}'".format(country_code))
-            member = message.author
-            role = dict_countries_alphacodes.get(country_code)
-            print("Adding country role '{}' and '{}' to member '{}'".format(role, expat_role_name, member))
-            await message.channel.send("Salut l'expatrié ! Je donne le rôle {}.".format(role))
-            await member.edit(nick=country_code + ' - ' + member.name)
-            await assign_country_role(member, role_country=dict_countries_alphacodes.get(country_code))
-
-        # Else, check if zip code
-        elif re.match('[0-9]{5}$', message.content):
-            dept_guess = message.content[:2]
-            await message.channel.send("Je n'ai pas demandé un code postal, j'ai demandé un numéro de département. Si "
-                                       "votre département est '{}' - veuillez taper '{}', "
-                                       "merci.".format(dept_guess, dept_guess))
-
-        # Finally, prompt again and harass
-        else:
-            await message.channel.send("{} - SVP, veuillez entrer votre numéro de département ou code pays "
-                                       "(exemples en Messages Privés)".format(message.author.mention))
-            await message.author.send("Salut {} :wave: ! Si vous recevez ce message, c'est que votre pseudo a un format"
-                                      " invalide - Sur le serveur, veuillez taper un message contenant seulement votre "
-                                      "**numéro de département** Français ou le code **CIO/Alpha-3** de votre pays "
-                                      "si vous n'êtes pas en France (Par ex, un message contenant seulement "
-                                      "'51' pour le département 51 ou 'ITA' pour l'Italie).".format(member.mention))
-            await message.author.send("> Exemples de pseudos **invalides**: '34Marcel', 'Algerie Abdel', 'BobDu987'")
-            await message.author.send("> Exemples de pseudos **valides**: '34 - Marcel', 'DZA Abdel', '987 TahitiBob'")
-    else:
-        await check_roles(member)
+    await nickname_actions(message)
+    await link_actions(message)
 
 
 if __name__ == '__main__':
