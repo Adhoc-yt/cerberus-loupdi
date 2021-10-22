@@ -605,7 +605,7 @@ async def link_actions(message: discord.Message):
                                       "https://discord.com/channels/632963159619141653/774140334006730782"
                                       "/774141383803273269 - et cette règle a du être renforcée le 19 mai 2021, "
                                       "https://discord.com/channels/632963159619141653/774140334006730782"
-                                      "/844824472153489458 - Merci de lire le règlement et de jouer le jeu ! :wave:")
+                                      "/844824472153489458 - Merci de lire le règlement et de jouer le jeu! :wave:")
 
 
 @bot.event
