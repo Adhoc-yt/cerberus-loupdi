@@ -519,13 +519,6 @@ async def nickname_actions(message: discord.Message):
     """
     member = message.author
     print("### '{}': '{}'".format(member, message.content))
-    # Process commands
-    await bot.process_commands(message)
-
-    # Ignore if bot
-    if member.bot:
-        print("{} is a bot, ignoring".format(member))
-        return
 
     # Ignore if member has a bypass role
     try:
@@ -691,6 +684,14 @@ async def scan_member(ctx, member: discord.Member):
 
 @bot.event
 async def on_message(message):
+    # Process commands
+    await bot.process_commands(message)
+
+    # Ignore if bot
+    if message.author.bot:
+        print("{} is a bot, ignoring".format(message.author))
+        return
+
     await nickname_actions(message)
     await link_actions(message)
 
