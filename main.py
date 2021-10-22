@@ -578,7 +578,7 @@ async def nickname_actions(message: discord.Message):
 async def link_actions(message: discord.Message):
     if detect_url(message):
         print("Link detected in '{}'".format(message.channel))
-        if message.channel not in forbidden_links_channels:
+        if message.channel.name not in forbidden_links_channels:
             print("Link is posted in whitelisted channel - Skipping")
         elif has_bypass_role(message.author):
             print("Link has been posted by someone with a bypass role - Skipping")
@@ -591,6 +591,7 @@ async def link_actions(message: discord.Message):
                                       "/774141383803273269 - et cette règle a du être renforcée le 19 mai 2021, "
                                       "https://discord.com/channels/632963159619141653/774140334006730782"
                                       "/844824472153489458 - Merci de lire le règlement et de jouer le jeu! :wave:")
+            print("message supprimé")
 
 
 @bot.event
