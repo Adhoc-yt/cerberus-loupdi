@@ -25,17 +25,9 @@ ignored_roles = {
     "Intervenant",
     "Streamer"
 }
-authorized_links_channels = {
-    "partage-de-vidéos",
-    "partage-articles-de-presse",
-    "section-pdf_-littérature",
-    "liens-discord-et-blogs-telegram",
-    "solidarite",
-    "autonomie",
-    "sante",
-    "informatique",
-    "musique"
-    "humour"
+forbidden_links_channels = {
+    "la-tanière",
+    "bienvenue"
 }
 
 dict_department_region = {
@@ -586,7 +578,7 @@ async def nickname_actions(message: discord.Message):
 async def link_actions(message: discord.Message):
     if detect_url(message):
         print("Link detected in '{}'".format(message.channel))
-        if message.channel in authorized_links_channels:
+        if message.channel not in forbidden_links_channels:
             print("Link is posted in whitelisted channel - Skipping")
         elif has_bypass_role(message.author):
             print("Link has been posted by someone with a bypass role - Skipping")
