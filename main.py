@@ -685,7 +685,8 @@ async def on_message(message):
         return
 
     await nickname_actions(message)
-    await link_actions(message)
+    if message.channel not in forbidden_links_channels:
+        await link_actions(message)
 
 
 if __name__ == '__main__':
