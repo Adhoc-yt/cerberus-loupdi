@@ -4,6 +4,8 @@ import logging
 import re
 from discord.ext import commands
 from discord.utils import get
+from datetime import datetime
+import pytz
 
 # Logging
 logging.basicConfig()
@@ -620,6 +622,19 @@ async def setup(ctx):
             await ctx.guild.create_role(name=role, colour=discord.Colour(random.randint(0, 0xFFFFFF)))
             await ctx.send(f":green_circle: Le rôle **{role}** a été créé")
     await ctx.send(f":white_check_mark: Fin de vérification des rôles")
+
+
+@bot.command()
+async def time(ctx):
+    """
+    c!time - Donne l'heure partout (ou presque)
+    """
+    utcmoment_naive = datetime.utcnow()
+    utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
+    timezones = ['America/Los_Angeles', 'Europe/Paris', 'Australia/Sydney']
+    for tz in timezones:
+        local_datetime = utcmoment.astimezone(pytz.timezone(tz))
+        await ctx.send(local_datetime.strftime("`%Y-%m-%d    %H:%M:%S    [{}]`".format(tz)))
 
 
 @bot.command()
