@@ -624,17 +624,25 @@ async def setup(ctx):
     await ctx.send(f":white_check_mark: Fin de vérification des rôles")
 
 
-@bot.command()
-async def time(ctx):
+def get_time():
     """
     c!time - Donne l'heure partout (ou presque)
     """
     utcmoment_naive = datetime.utcnow()
     utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
     timezones = ['America/Los_Angeles', 'Europe/Paris', 'Australia/Sydney']
+    res = "```"
     for tz in timezones:
         local_datetime = utcmoment.astimezone(pytz.timezone(tz))
-        await ctx.send(local_datetime.strftime("`%Y-%m-%d    %H:%M:%S    [{}]`".format(tz)))
+        res += local_datetime.strftime("%Y-%m-%d    %H:%M    [{}]\n".format(tz))
+
+    res += "```"
+    return res
+
+
+@bot.command()
+async def time(ctx):
+    await ctx.send(get_time())
 
 
 @bot.command()
@@ -703,6 +711,8 @@ async def on_message(message):
     await nickname_actions(message)
     await link_actions(message)
 
+    if "quelle heure" in message.content.lower():
+        await message.channel.send(get_time())
 
 if __name__ == '__main__':
     discord_key = open("key.txt", "r").read()
