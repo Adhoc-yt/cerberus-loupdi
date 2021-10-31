@@ -710,7 +710,7 @@ async def purge(ctx):
     msg = await bot.wait_for('message', check=lambda message: message.author == ctx.author)
     if msg.content.lower() == "oui":
         await ctx.send(":gun: Purge activée.")
-        await ctx.send("https://media.tenor.co/videos/ead64d479841781440eaf1d2bd758914/mp4")
+        await ctx.send("https://media.tenor.co/videos/832cce7f5c9ee406dc7fb8d4843690ee/mp4")
         for member in ctx.guild.members:
             if role_purge in member.roles:
                 await ctx.guild.kick(member, reason="Pseudo non conforme")
