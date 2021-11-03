@@ -646,6 +646,14 @@ async def time(ctx):
 
 
 @bot.command()
+async def dept(ctx, dept_number):
+    if dept_number in dict_department_region.keys():
+        await ctx.send("Département {}: {}".format(dept_number, dict_department_region.get(dept_number)))
+    else:
+        await ctx.send("Département non reconnu. Commande: ```c!dept <numéro_département>```")
+
+
+@bot.command()
 @commands.has_any_role(admin_role, 'Modérateur')
 async def scan(ctx):
     """
@@ -716,7 +724,8 @@ async def purge(ctx):
                 await ctx.guild.kick(member, reason="Pseudo non conforme")
                 count_kick += 1
                 print("Le membre {} a été expulsé".format(member.name))
-        ctx.send("Purge terminée.")
+        await ctx.send("Purge terminée.")
+        await ctx.send("-> {} membre(s) purgés(s)".format(count_kick))
     elif msg.content.lower() == "warn":
         await ctx.send(":gun: Avertissement de purge activé.")
         for member in ctx.guild.members:
@@ -724,11 +733,10 @@ async def purge(ctx):
                 await ctx.send("{} - dernier avertissement, mise en règle sinon kick.".format(member.mention))
                 count_kick += 1
                 print("Le membre {} a été averti".format(member.name))
-        ctx.send("Avertissement de purge terminé")
+        await ctx.send("Avertissement de purge terminé")
+        await ctx.send("-> {} membre(s) averti(s)".format(count_kick))
     else:
         await ctx.send("Commande annulée")
-
-    await ctx.send("-> {} membre(s) averti(s)".format(count_kick))
 
 
 @bot.event
