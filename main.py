@@ -701,11 +701,11 @@ async def scan_member(ctx, member: discord.Member):
         else:
             msg = "Pseudo et rôles validés"
     elif has_valid_nick(member):
-         msg = "Rôles corrigés"
+        msg = "Rôles corrigés"
     else:
         msg = "Pseudo invalide - Rôle par défaut attribué"
 
-    embed = discord.Embed(title="Vérification de {}".format(member), description="{}"format(msg))
+    embed = discord.Embed(title="Vérification de {}".format(member), description="{}".format(msg))
     await ctx.send(embed=embed)
     await ctx.send(":white_check_mark: Fin de vérification pour {}.".format(member))
 
@@ -718,7 +718,8 @@ async def purge(ctx):
     """
     role_purge = discord.utils.get(ctx.guild.roles, name=default_role)
     count_kick = 0
-    embed = discord.Embed(title="Purger le '{}' ? *(Oui / Warn / Non) * ".format(default_role), description = "Oui/Warn/Non")
+    embed = discord.Embed(title="Purger le '{}' ? *(Oui / Warn / Non) * ".format(default_role),
+                          description="Oui/Warn/Non")
     await ctx.send(embed=embed)
     msg = await bot.wait_for('message', check=lambda message: message.author == ctx.author)
 
@@ -745,7 +746,7 @@ async def purge(ctx):
                 count_kick += 1
                 print("Le membre {} a été averti".format(member.name))
         embed.add_field(name="Avertissement envoyé", value="-> {} membre(s) averti(s)".format(count_kick),
-                       inline=False)
+                        inline=False)
     else:
         embed.add_field(name="Commande annulée", value="", inline=False)
 
@@ -767,6 +768,7 @@ async def on_message(message):
 
     if "quelle heure" in message.content.lower():
         await message.channel.send(get_time())
+
 
 if __name__ == '__main__':
     discord_key = open("key.txt", "r").read()
