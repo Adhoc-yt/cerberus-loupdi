@@ -680,10 +680,10 @@ async def scan(ctx):
 
         members_scanned_count += 1
 
-    embed = discord.Embed(title="Membres scannés", description="{}".format(members_scanned_count))
-    embed.add_field(name="Rôle spécial", value="{}".format(bypass_members_count), inline=True)
-    embed.add_field(name="Rôle édité", value="{}".format(corrected_members_count), inline=True)
-    embed.add_field(name="Pseudos invalides", value="{}".format(invalid_members_count), inline=True)
+    embed = discord.Embed(title="Membres scannés", description="➥ {}".format(members_scanned_count))
+    embed.add_field(name="Rôle spécial", value="➥ {}".format(bypass_members_count), inline=True)
+    embed.add_field(name="Rôle édité", value="➥ {}".format(corrected_members_count), inline=True)
+    embed.add_field(name="Pseudos invalides", value="➥ {}".format(invalid_members_count), inline=True)
     await ctx.send(embed=embed)
 
 
