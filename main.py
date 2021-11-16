@@ -632,7 +632,7 @@ def get_time():
     """
     utcmoment_naive = datetime.utcnow()
     utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
-    timezones = ['America/Los_Angeles', 'America/Toronto', 'Europe/Paris', 'Australia/Sydney']
+    timezones = ['America/Los_Angeles', 'America/Miami', 'Europe/Paris', 'Australia/Sydney']
     res = "```"
     for tz in timezones:
         local_datetime = utcmoment.astimezone(pytz.timezone(tz))
@@ -694,16 +694,19 @@ async def scan_member(ctx, member: discord.Member):
     c!scan_member - Vérifie et actualise les rôles d'un membre particulier du serveur.
     Cette commande ne peut être utilisée que par les Admins/Modos (role Discord).
     """
-    await ctx.send(":arrow_forward: Début de vérification de {}...".format(member))
+    msg = ""
     if await check_roles(member):
         if has_bypass_role(member):
-            await ctx.send("Rôle spécial trouvé - ignoré")
+            msg = "Rôle spécial trouvé - ignoré"
         else:
-            await ctx.send("Pseudo et rôles validés")
+            msg = "Pseudo et rôles validés"
     elif has_valid_nick(member):
-        await ctx.send("Rôles corrigés")
+         msg = "Rôles corrigés"
     else:
-        await ctx.send("Pseudo invalide - Rôle par défaut attribué")
+        msg = "Pseudo invalide - Rôle par défaut attribué"
+
+    embed = discord.Embed(title="Vérification de {}".format(member), description="{}"format(msg))
+    await ctx.send(embed=embed)
     await ctx.send(":white_check_mark: Fin de vérification pour {}.".format(member))
 
 
@@ -715,34 +718,38 @@ async def purge(ctx):
     """
     role_purge = discord.utils.get(ctx.guild.roles, name=default_role)
     count_kick = 0
-    await ctx.send("Purger le '{}' ? *(Oui/Warn/Non)*".format(default_role))
+    embed = discord.Embed(title="Purger le '{}' ? *(Oui / Warn / Non) * ".format(default_role), description = "Oui/Warn/Non")
+    await ctx.send(embed=embed)
     msg = await bot.wait_for('message', check=lambda message: message.author == ctx.author)
+
+    embed = discord.Embed(
+        title=":x: Adios pepitos!",
+        color=discord.Colour.purple()
+    )
+
     if msg.content.lower() == "oui":
-        embed = discord.Embed(
-            title=":x: Adios pepitos!",
-            color=discord.Colour.purple()
-        )
-        embed.set_image(url="https://media.tenor.co/videos/832cce7f5c9ee406dc7fb8d4843690ee/mp4")
+        embed.set_image(url="https://media1.giphy.com/media/l0HlE1P55SaoknGhO/giphy.gif")
 
         for member in ctx.guild.members:
             if role_purge in member.roles:
                 await ctx.guild.kick(member, reason="Pseudo non conforme")
                 count_kick += 1
                 print("Le membre {} a été expulsé".format(member.name))
-        embed = discord.Embed()
         embed.add_field(name="Purge terminée", value="-> {} membre(s) purgés(s)".format(count_kick), inline=False)
-        await ctx.send(embed=embed)
+
     elif msg.content.lower() == "warn":
         await ctx.send(":gun: Avertissement de purge activé.")
         for member in ctx.guild.members:
             if role_purge in member.roles:
-                await ctx.send("{} - dernier avertissement, mise en règle sinon kick.".format(member.mention))
+                await member.send("{} - dernier avertissement, mise en règle sinon kick.".format(member.mention))
                 count_kick += 1
                 print("Le membre {} a été averti".format(member.name))
-        await ctx.send("Avertissement de purge terminé")
-        await ctx.send("-> {} membre(s) averti(s)".format(count_kick))
+        embed.add_field(name="Avertissement envoyé", value="-> {} membre(s) averti(s)".format(count_kick),
+                       inline=False)
     else:
-        await ctx.send("Commande annulée")
+        embed.add_field(name="Commande annulée", value="", inline=False)
+
+    await ctx.send(embed=embed)
 
 
 @bot.event
