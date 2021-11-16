@@ -389,7 +389,8 @@ dict_countries_alphacodes = {
     "ZAF": "Afrique du Sud",
     "ZMB": "Zambie",
     "ZWE": "Zimbabwe",
-    "QUE": "Québec"
+    "QUE": "Québec",
+    "CH": "Suisse"
 }
 region_roles = set(dict_department_region.values())
 region_roles.add(default_role)
@@ -561,13 +562,14 @@ async def nickname_actions(message: discord.Message):
 
         # Finally, prompt again and harass
         else:
-            await message.channel.send("{} - SVP, veuillez entrer votre numéro de département ou code pays "
-                                       "(exemples en Messages Privés), et rien d'autre.".format(message.author.mention))
-            await message.channel.send("Tant que vous n'aurez pas de pseudo valide, seule la modération peut vous lire,"
+            await message.channel.send("{} - SVP, veuillez entrer votre numéro de département ou code pays à 3 lettres "
+                                       "(exemples en Messages Privés), **RIEN D'AUTRE**."
+                                       " "
+                                       "Tant que vous n'aurez pas répondu, **seule la modération ** peut vous lire,"
                                        " et vous n'avez pas accès au reste des salons. Si vous restez trop longtemps "
-                                       "avec un pseudo invalide, vous serez éjecté du serveur.")
-            await message.author.send("Salut {} :wave: ! Si vous recevez ce message, c'est que votre pseudo a un format"
-                                      " invalide - Sur le serveur, veuillez taper un message contenant seulement votre "
+                                       "sans répondre, vous serez éjecté.".format(message.author.mention))
+            await message.author.send("Salut {} :wave: !"
+                                      "Sur le serveur, veuillez taper un message contenant seulement votre "
                                       "**numéro de département** Français ou le code **CIO/Alpha-3** de votre pays "
                                       "si vous n'êtes pas en France (Par ex, un message contenant seulement "
                                       "'51' pour le département 51 ou 'ITA' pour l'Italie).".format(member.mention))
@@ -661,7 +663,6 @@ async def scan(ctx):
     Cette commande ne peut être utilisée que par les Admins/Modos (role Discord).
     """
     members_list = ctx.guild.members
-    await ctx.send(f":arrow_forward: Début de vérification des membres...")
     members_scanned_count = 0
     corrected_members_count = 0
     bypass_members_count = 0
@@ -679,11 +680,11 @@ async def scan(ctx):
 
         members_scanned_count += 1
 
-    await ctx.send("- {} membres scannés ".format(members_scanned_count))
-    await ctx.send("- {} membres ignorés (rôles spéciaux) ".format(corrected_members_count))
-    await ctx.send("- {} rôles corrigés ".format(bypass_members_count))
-    await ctx.send("- {} pseudos invalides".format(invalid_members_count))
-    await ctx.send(":white_check_mark: Fin de vérification des membres ")
+    embed = discord.Embed(title="Membres scannés", description="{}.format(members_scanned_count)")
+    embed.add_field(name="Rôle spécial", value="{}".format(bypass_members_count), inline=True)
+    embed.add_field(name="Rôle édité", value="{}".format(corrected_members_count), inline=True)
+    embed.add_field(name="Pseudos invalides", value="{}".format(invalid_members_count), inline=True)
+    await ctx.send(embed=embed)
 
 
 @bot.command()
@@ -707,25 +708,30 @@ async def scan_member(ctx, member: discord.Member):
 
 
 @bot.command()
-@commands.has_any_role(admin_role)
+@commands.has_any_role(admin_role, 'Modérateur')
 async def purge(ctx):
     """
     c!purge - Avertit ou exclut toutes les personnes qui ont le rôle par défaut
     """
     role_purge = discord.utils.get(ctx.guild.roles, name=default_role)
     count_kick = 0
-    await ctx.send("Purger le groupe '{}' ? *(Oui/Warn/Non)*".format(default_role))
+    await ctx.send("Purger le '{}' ? *(Oui/Warn/Non)*".format(default_role))
     msg = await bot.wait_for('message', check=lambda message: message.author == ctx.author)
     if msg.content.lower() == "oui":
-        await ctx.send(":gun: Purge activée.")
-        await ctx.send("https://media.tenor.co/videos/832cce7f5c9ee406dc7fb8d4843690ee/mp4")
+        embed = discord.Embed(
+            title=":x: Adios pepitos!",
+            color=discord.Colour.purple()
+        )
+        embed.set_image(url="https://media.tenor.co/videos/832cce7f5c9ee406dc7fb8d4843690ee/mp4")
+
         for member in ctx.guild.members:
             if role_purge in member.roles:
                 await ctx.guild.kick(member, reason="Pseudo non conforme")
                 count_kick += 1
                 print("Le membre {} a été expulsé".format(member.name))
-        await ctx.send("Purge terminée.")
-        await ctx.send("-> {} membre(s) purgés(s)".format(count_kick))
+        embed = discord.Embed()
+        embed.add_field(name="Purge terminée", value="-> {} membre(s) purgés(s)".format(count_kick), inline=False)
+        await ctx.send(embed=embed)
     elif msg.content.lower() == "warn":
         await ctx.send(":gun: Avertissement de purge activé.")
         for member in ctx.guild.members:
