@@ -632,7 +632,7 @@ def get_time():
     """
     utcmoment_naive = datetime.utcnow()
     utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
-    timezones = ['America/Los_Angeles', 'America/Miami', 'Europe/Paris', 'Australia/Sydney']
+    timezones = ['America/Los_Angeles', 'America/Cayenne', 'Europe/Paris', 'Australia/Sydney']
     res = "```"
     for tz in timezones:
         local_datetime = utcmoment.astimezone(pytz.timezone(tz))
