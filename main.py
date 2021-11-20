@@ -694,7 +694,6 @@ async def scan_member(ctx, member: discord.Member):
     c!scan_member - Vérifie et actualise les rôles d'un membre particulier du serveur.
     Cette commande ne peut être utilisée que par les Admins/Modos (role Discord).
     """
-    msg = ""
     if await check_roles(member):
         if has_bypass_role(member):
             msg = "Rôle spécial trouvé - ignoré"
