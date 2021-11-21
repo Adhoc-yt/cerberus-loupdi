@@ -559,7 +559,7 @@ async def nickname_actions(message: discord.Message):
             await message.channel.send("Je n'ai pas demandé un code postal, j'ai demandé un numéro de département. Si "
                                        "votre département est '{}' - veuillez taper '{}', "
                                        "merci.".format(dept_guess, dept_guess))
-        elif any(["salut", "bonjour", "coucou", "hello"]) in message.content.lower():
+        elif any(substring in message.content.lower() for substring in ["salut", "bonjour", "coucou", "hello"]):
             await message.channel.send("J'apprécie la politesse, mais vous parlez à un robot. La consigne est claire: "
                                        "numéro de département ou code pays. **RIEN. D'AUTRE.**")
 
