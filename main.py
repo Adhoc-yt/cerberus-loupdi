@@ -651,6 +651,16 @@ async def time(ctx):
 
 
 @bot.command()
+async def annonce(ctx, message):
+    print("Tentative d'envoi: '{}'".format(message))
+    for channel in bot.get_all_channels():
+        try:
+            await channel.send("{}".format(message))
+        except AttributeError:
+            pass
+
+
+@bot.command()
 async def dept(ctx, dept_number):
     if dept_number in dict_department_region.keys():
         await ctx.send("Département {}: {}".format(dept_number, dict_department_region.get(dept_number)))
