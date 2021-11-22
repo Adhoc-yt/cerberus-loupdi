@@ -556,28 +556,42 @@ async def nickname_actions(message: discord.Message):
         # Else, check if zip code
         elif re.match('[0-9]{5}$', message.content):
             dept_guess = message.content[:2]
-            await message.channel.send("Je n'ai pas demandé un code postal, j'ai demandé un numéro de département. Si "
-                                       "votre département est '{}' - veuillez taper '{}', "
-                                       "merci.".format(dept_guess, dept_guess))
+            output = "Je n'ai pas demandé un code postal, j'ai demandé un numéro de département. Si votre département" \
+                     " est '{}' - veuillez taper '{}', merci.".format(dept_guess, dept_guess)
+            embed = discord.Embed(title="Erreur", description="➥ {}".format(output))
+            await message.channel.send(embed=embed)
         elif any(substring in message.content.lower() for substring in ["salut", "bonjour", "coucou", "hello"]):
-            await message.channel.send("J'apprécie la politesse, mais vous parlez à un robot. La consigne est claire: "
-                                       "numéro de département ou code pays. **RIEN. D'AUTRE.**")
-
+            output = "J'apprécie la politesse, mais vous parlez à un robot. La consigne est claire: numéro de " \
+                     "département ou code pays. **RIEN. D'AUTRE.** "
+            embed = discord.Embed(title="Erreur", description="➥ {}".format(output))
+            await message.channel.send(embed=embed)
         # Finally, prompt again and harass
         else:
-            await message.channel.send("{} - SVP, veuillez entrer votre numéro de département ou code pays à 3 lettres "
-                                       "(exemples en Messages Privés), **RIEN D'AUTRE**."
-                                       " "
-                                       "Tant que vous n'aurez pas répondu, **seule la modération ** peut vous lire,"
-                                       " et vous n'avez pas accès au reste des salons. Si vous restez trop longtemps "
-                                       "sans répondre, vous serez éjecté.".format(message.author.mention))
-            await message.author.send("Salut {} :wave: !"
-                                      "Sur le serveur, veuillez taper un message contenant seulement votre "
-                                      "**numéro de département** Français ou le code **CIO/Alpha-3** de votre pays "
-                                      "si vous n'êtes pas en France (Par ex, un message contenant seulement "
-                                      "'51' pour le département 51 ou 'ITA' pour l'Italie).".format(member.mention))
-            await message.author.send("> Exemples de pseudos **invalides**: '34Marcel', 'Algerie Abdel', 'BobDu987'")
-            await message.author.send("> Exemples de pseudos **valides**: '34 - Marcel', 'DZA Abdel', '987 TahitiBob'")
+            output = "{} - SVP, veuillez entrer votre numéro de département ou code pays à 3 lettres "\
+                "(exemples en Messages Privés), **RIEN D'AUTRE**. "
+            embed = discord.Embed(title="Erreur", description="➥ {}".format(output))
+            embed.add_field(value="➥ Tant que vous n'aurez pas répondu, **seule la modération ** peut vous lire,"
+                                  " et vous n'avez pas accès au reste des salons. Si vous restez trop longtemps "
+                                  "sans répondre, vous serez éjecté.".format(message.author.mention))
+            await message.channel.send(embed=embed)
+
+            mp_embed = discord.Embed(title="Salut {} :wave: !".format(message.author.mention),
+                                     description="Je suis un robot, et j'aide à accueillir les nouveaux.")
+            mp_embed.add_field(title="Pourquoi demande-t-on cette info ?",
+                               description="➥ Le but du serveur est de mettre en relation les personnes"
+                                           ", et vous permet de repérer rapidement les membres de *votre* "
+                                           "région.")
+            mp_embed.add_field(title="Sur le serveur (pas ici)",
+                               description="➥ Veuillez taper un message contenant seulement "
+                                           "votre **numéro de département** Français")
+            mp_embed.add_field(title="Si vous n'êtes pas en France",
+                               description="➥ Veuillez taper un message contenant seulement votre code pays à 3 "
+                                           "lettres, par exemple 'CHE' la Suisse, 'DZA' pour l'Algérie, etc.")
+            mp_embed.add_field(title="> Exemples de pseudos au format **invalide**",
+                               description="➥ '34Marcel', 'Algerie Abdel', 'BobDu987'")
+            mp_embed.add_field(title="> Exemples de pseudos au format **valide**",
+                               description="➥ '34 - Marcel', 'DZA Abdel', '987 TahitiBob'".format())
+            await message.author.send(embed=mp_embed)
     else:
         await check_roles(member)
 
@@ -664,7 +678,7 @@ async def annonce(ctx, message):
 async def selfname(ctx, nickname):
     embed = discord.Embed(title="Changement de pseudo", description="➥ {}".format(nickname))
     await ctx.guild.get_member(bot.user.id).edit(nick=nickname)
-    await ctx.send(embed)
+    await ctx.send(embed=embed)
 
 
 @bot.command()
