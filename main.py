@@ -567,30 +567,34 @@ async def nickname_actions(message: discord.Message):
             await message.channel.send(embed=embed)
         # Finally, prompt again and harass
         else:
-            output = "{} - SVP, veuillez entrer votre numéro de département ou code pays à 3 lettres "\
-                "(exemples en Messages Privés), **RIEN D'AUTRE**. "
+            output = "{} - SVP, veuillez entrer votre numéro de département ou code pays à 3 lettres " \
+                     "(exemples en Messages Privés), **RIEN D'AUTRE**. ".format(message.author.mention)
             embed = discord.Embed(title="Erreur", description="➥ {}".format(output))
-            embed.add_field(value="➥ Tant que vous n'aurez pas répondu, **seule la modération ** peut vous lire,"
-                                  " et vous n'avez pas accès au reste des salons. Si vous restez trop longtemps "
-                                  "sans répondre, vous serez éjecté.".format(message.author.mention))
+            embed.add_field(name="Attention", value="➥ Tant que vous n'aurez pas répondu, **seule la modération ** "
+                                                    "peut vous lire, et vous n'avez pas accès au reste des salons. Si "
+                                                    "vous restez trop longtemps sans répondre, vous serez "
+                                                    "éjecté.".format(message.author.mention))
             await message.channel.send(embed=embed)
 
-            mp_embed = discord.Embed(title="Salut {} :wave: !".format(message.author.mention),
+            mp_embed = discord.Embed(title="Salut {} :wave: !".format(message.author.name),
                                      description="Je suis un robot, et j'aide à accueillir les nouveaux.")
-            mp_embed.add_field(title="Pourquoi demande-t-on cette info ?",
-                               description="➥ Le but du serveur est de mettre en relation les personnes"
-                                           ", et vous permet de repérer rapidement les membres de *votre* "
-                                           "région.")
-            mp_embed.add_field(title="Sur le serveur (pas ici)",
-                               description="➥ Veuillez taper un message contenant seulement "
-                                           "votre **numéro de département** Français")
-            mp_embed.add_field(title="Si vous n'êtes pas en France",
-                               description="➥ Veuillez taper un message contenant seulement votre code pays à 3 "
-                                           "lettres, par exemple 'CHE' la Suisse, 'DZA' pour l'Algérie, etc.")
-            mp_embed.add_field(title="> Exemples de pseudos au format **invalide**",
-                               description="➥ '34Marcel', 'Algerie Abdel', 'BobDu987'")
-            mp_embed.add_field(title="> Exemples de pseudos au format **valide**",
-                               description="➥ '34 - Marcel', 'DZA Abdel', '987 TahitiBob'".format())
+            mp_embed.add_field(name="Pourquoi demande-t-on cette info ?",
+                               value="➥ Le but du serveur est de mettre en relation les personnes"
+                                     ", et vous permet de repérer rapidement les membres de *votre* "
+                                     "région.",
+                               inline=False)
+            mp_embed.add_field(name="Sur le serveur (pas ici)",
+                               value="➥ Veuillez taper un message contenant seulement "
+                                     "votre **numéro de département** Français",
+                               inline=False)
+            mp_embed.add_field(name="Si vous n'êtes pas en France",
+                               value="➥ Veuillez taper un message contenant seulement votre code pays à 3 "
+                                     "lettres, par exemple 'CHE' la Suisse, 'DZA' pour l'Algérie, etc.",
+                               inline=False)
+            mp_embed.add_field(name="> Exemples de pseudos **invalides**",
+                               value="➥ '34Marcel', 'Algerie Abdel', 'BobDu987'")
+            mp_embed.add_field(name="> Exemples de pseudos **valides**",
+                               value="➥ '34 - Marcel', 'DZA Abdel', '987 TahitiBob'".format())
             await message.author.send(embed=mp_embed)
     else:
         await check_roles(member)
