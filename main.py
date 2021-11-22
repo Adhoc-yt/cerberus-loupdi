@@ -661,6 +661,13 @@ async def annonce(ctx, message):
 
 
 @bot.command()
+async def selfname(ctx, nickname):
+    embed = discord.Embed(title="Changement de pseudo", description="➥ {}".format(nickname))
+    await ctx.guild.get_member(bot.user.id).edit(nick=nickname)
+    await ctx.send(embed)
+
+
+@bot.command()
 async def dept(ctx, dept_number):
     if dept_number in dict_department_region.keys():
         await ctx.send("Département {}: {}".format(dept_number, dict_department_region.get(dept_number)))
