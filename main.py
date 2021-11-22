@@ -562,7 +562,7 @@ async def nickname_actions(message: discord.Message):
             await message.channel.send(embed=embed)
         elif any(substring in message.content.lower() for substring in ["salut", "bonjour", "coucou", "hello"]):
             output = "J'apprécie la politesse, mais vous parlez à un robot. La consigne est claire: numéro de " \
-                     "département ou code pays. **RIEN. D'AUTRE.** "
+                     "département ou code pays. **RIEN. D'AUTRE.**"
             embed = discord.Embed(title="Erreur", description="➥ {}".format(output))
             await message.channel.send(embed=embed)
         # Finally, prompt again and harass
