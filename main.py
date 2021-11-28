@@ -601,7 +601,7 @@ async def nickname_actions(message: discord.Message):
 
 
 async def link_actions(message: discord.Message):
-    if detect_url(message):
+    if detect_url(message) and not re.findall('discord', message.content):
         print("Link detected in '{}'".format(message.channel))
         if message.channel.name not in forbidden_links_channels:
             print("Link is posted in whitelisted channel - Skipping")
@@ -647,6 +647,41 @@ async def setup(ctx):
     await ctx.send(f":white_check_mark: Fin de vérification des rôles")
 
 
+def recette_crepe():
+    """
+    Embed - Recettes aux crepes
+    """
+    embed = discord.Embed(title="Recette de crêpes - 4 personnes",
+                          description="*Difficulté*: Facile / *Préparation*: 10 mn / *Cuisson*: 15 mn / *Temps*: 25 mn",
+                          color=0xffc800)
+    embed.add_field(name="Ingrédients", value=" ", inline=False)
+    embed.add_field(name="- Farine", value="250g", inline=True)
+    embed.add_field(name="- Oeuf", value="4", inline=True)
+    embed.add_field(name="- Lait", value="1/2 Litre", inline=True)
+    embed.add_field(name="- Sucre", value="2 c à s", inline=True)
+    embed.add_field(name="- Sel", value="1 pincée", inline=True)
+    embed.add_field(name="- Beurre fondu", value="50 g", inline=True)
+    embed.add_field(name="___________________________", value=" ", inline=False)
+    embed.add_field(name="1", value="Mettez la farine dans un saladier avec le sel et le sucre.", inline=False)
+    embed.add_field(name="2", value="Faites un puits au milieu et versez-y les œufs.", inline=False)
+    embed.add_field(name="3",
+                    value="Commencez à mélanger doucement. Quand le mélange devient épais, ajoutez le lait froid "
+                          "petit à petit.",
+                    inline=False)
+    embed.add_field(name="4",
+                    value="Quand tout le lait est mélangé, la pâte doit être assez fluide. Si elle vous paraît trop "
+                          "épaisse, rajoutez un peu de lait. Ajoutez ensuite le beurre fondu refroidi, mélangez bien.",
+                    inline=False)
+    embed.add_field(name="5",
+                    value="Faites cuire les crêpes dans une poêle chaude (par précaution légèrement huilée si votre "
+                          "poêle à crêpes n'est pas anti-adhésive). Versez une petite louche de pâte dans la poêle, "
+                          "faites un mouvement de rotation pour répartir la pâte sur toute la surface. Posez sur le "
+                          "feu et quand le tour de la crêpe se colore en roux clair, il est temps de la retourner.",
+                    inline=False)
+    embed.add_field(name="6", value="Laissez cuire environ une minute de ce côté et la crêpe est prête.", inline=False)
+    return embed
+
+
 def get_time():
     """
     c!time - Donne l'heure partout (ou presque)
@@ -666,6 +701,40 @@ def get_time():
 @bot.command()
 async def time(ctx):
     await ctx.send(get_time())
+
+
+@bot.command()
+async def dlive(ctx):
+    await ctx.send("https://dlive.tv/Radio-LoupDi")
+
+
+@bot.command()
+async def youtube(ctx):
+    await ctx.send("https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A")
+
+
+@bot.command()
+async def odysee(ctx):
+    await ctx.send("https://odysee.com/@RadioLoupDi:9")
+
+
+@bot.command()
+async def telegram(ctx):
+    await ctx.send("https://t.me/RadioLoupDi")
+
+
+@bot.command()
+async def tipeee(ctx):
+    await ctx.send("https://fr.tipeee.com/loup-divergent")
+
+
+@bot.command()
+async def loupdi(ctx):
+    await ctx.send("```DLive``` https://dlive.tv/Radio-LoupDi"
+                   "```YouTube``` https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A"
+                   "```Odysee``` https://odysee.com/@RadioLoupDi:9"
+                   "```Telegram``` https://t.me/RadioLoupDi"
+                   "```Tipeee``` https://fr.tipeee.com/loup-divergent")
 
 
 @bot.command()
@@ -805,6 +874,11 @@ async def on_message(message):
 
     if "quelle heure" in message.content.lower():
         await message.channel.send(get_time())
+
+    if "crepe" in message.content.lower() or \
+            "recette" in message.content.lower() or \
+            "crêpe" in message.content.lower():
+        await message.channel.send(embed=recette_crepe())
 
 
 if __name__ == '__main__':
