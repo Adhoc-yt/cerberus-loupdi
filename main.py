@@ -654,14 +654,14 @@ def recette_crepe():
     embed = discord.Embed(title="Recette de crêpes - 4 personnes",
                           description="*Difficulté*: Facile / *Préparation*: 10 mn / *Cuisson*: 15 mn / *Temps*: 25 mn",
                           color=0xffc800)
-    embed.add_field(name="Ingrédients", value=" ", inline=False)
+    embed.add_field(name="Ingrédients", value='\u200b', inline=False)
     embed.add_field(name="- Farine", value="250g", inline=True)
     embed.add_field(name="- Oeuf", value="4", inline=True)
     embed.add_field(name="- Lait", value="1/2 Litre", inline=True)
     embed.add_field(name="- Sucre", value="2 c à s", inline=True)
     embed.add_field(name="- Sel", value="1 pincée", inline=True)
     embed.add_field(name="- Beurre fondu", value="50 g", inline=True)
-    embed.add_field(name="___________________________", value=" ", inline=False)
+    embed.add_field(name="___________________________", value='\u200b', inline=False)
     embed.add_field(name="1", value="Mettez la farine dans un saladier avec le sel et le sucre.", inline=False)
     embed.add_field(name="2", value="Faites un puits au milieu et versez-y les œufs.", inline=False)
     embed.add_field(name="3",
