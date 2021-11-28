@@ -730,11 +730,11 @@ async def tipeee(ctx):
 
 @bot.command()
 async def loupdi(ctx):
-    await ctx.send("```DLive``` https://dlive.tv/Radio-LoupDi"
-                   "```YouTube``` https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A"
-                   "```Odysee``` https://odysee.com/@RadioLoupDi:9"
-                   "```Telegram``` https://t.me/RadioLoupDi"
-                   "```Tipeee``` https://fr.tipeee.com/loup-divergent")
+    await ctx.send("```DLive``` https://dlive.tv/Radio-LoupDi "
+                   "```YouTube``` https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A "
+                   "```Odysee``` https://odysee.com/@RadioLoupDi:9 "
+                   "```Telegram``` https://t.me/RadioLoupDi "
+                   "```Tipeee``` https://fr.tipeee.com/loup-divergent ")
 
 
 @bot.command()
