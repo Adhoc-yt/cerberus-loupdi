@@ -876,7 +876,6 @@ async def on_message(message):
         await message.channel.send(get_time())
 
     if "crepe" in message.content.lower() or \
-            "recette" in message.content.lower() or \
             "crêpe" in message.content.lower():
         await message.channel.send(embed=recette_crepe())
 
