@@ -31,6 +31,13 @@ forbidden_links_channels = {
     "la-tanière",
     "bienvenue"
 }
+discord_links_channel = "liens-discord-et-blogs-telegram"
+link_only_channels = {
+    "partage-de-vidéos",
+    "partage-article-de-presse",
+    "musique",
+    "liens-discord-et-blogs-telegram"
+}
 
 dict_department_region = {
     "01": "Auvergne-Rhône-Alpes",
@@ -601,10 +608,35 @@ async def nickname_actions(message: discord.Message):
 
 
 async def link_actions(message: discord.Message):
-    if detect_url(message) and not re.findall('discord', message.content):
+    # Pas de pièce jointe ni de lien dans #partage-de-vidéos
+    if message.channel.name == "partage-de-vidéos":
+        if not detect_url(message):
+            print("Message posted in #partage-vidéos but no video or link posted !")
+            await message.channel.send("{}, ce salon est réservé au partage de vidéos, pas de discussion ici"
+                                       " - message supprimé.".format(message.author.mention))
+            await message.delete()
+
+    # Autre chose que des liens dans les salons de partage
+    if detect_url(message):
+        if any(domain in message.content.lower() for domain in ['discord.gg', 't.me']):
+            print("Tgram or Discord server link detected")
+            if message.channel.name != discord_links_channel:
+                await message.channel.send("{}, merci de poster les liens Discord et Telegram dans le salon approprié,"
+                                           " <#{}> - message supprimé.".format(message.author.mention,
+                                                                               '778014952757526549'))
+                await message.delete()
+    # Lien dans un salon pas approprié
+    if detect_url(message) and not re.findall('discord.com', message.content):
         print("Link detected in '{}'".format(message.channel))
+        if message.channel.name == discord_links_channel:
+            print("Link is posted in Discord/Tgram channel only")
+            if not re.match('discord.gg', message.content) and not re.match('t.me', message.content):
+                await message.channel.send("{}, tu as posté dans le mauvais salon - ce salon est réservé aux liens "
+                                           "Discord et Telegram, message supprimé.".format(message.author.mention))
+                await message.delete()
         if message.channel.name not in forbidden_links_channels:
             print("Link is posted in whitelisted channel - Skipping")
+            return
         elif has_bypass_role(message.author):
             print("Link has been posted by someone with a bypass role - Skipping")
         else:
@@ -616,7 +648,6 @@ async def link_actions(message: discord.Message):
                                       "/774141383803273269 - et cette règle a du être renforcée le 19 mai 2021, "
                                       "https://discord.com/channels/632963159619141653/774140334006730782"
                                       "/844824472153489458 - Merci de lire le règlement et de jouer le jeu! :wave:")
-            print("message supprimé")
 
 
 @bot.event
