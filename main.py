@@ -760,7 +760,7 @@ async def tipeee(ctx):
 
 
 @bot.command()
-async def discord(ctx):
+async def serveur(ctx):
     await ctx.send("https://discord.gg/7sbB6xAJtq")
 
 
