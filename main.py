@@ -1,11 +1,12 @@
-import random
-import discord
 import logging
+import random
 import re
+from datetime import datetime
+
+import discord
+import pytz
 from discord.ext import commands
 from discord.utils import get
-from datetime import datetime
-import pytz
 
 # Logging
 logging.basicConfig()
@@ -608,6 +609,9 @@ async def nickname_actions(message: discord.Message):
 
 
 async def link_actions(message: discord.Message):
+    if message.channel.name == "textuel-staff":
+        # skip
+        return
     # Pas de pièce jointe ni de lien dans #partage-de-vidéos
     if message.channel.name == "partage-de-vidéos":
         if not detect_url(message):
@@ -630,10 +634,15 @@ async def link_actions(message: discord.Message):
         print("Link detected in '{}'".format(message.channel))
         if message.channel.name == discord_links_channel:
             print("Link is posted in Discord/Tgram channel only")
-            if not re.match('discord.gg', message.content) and not re.match('t.me', message.content):
+            if re.findall('discord.gg', message.content) or re.findall('t.me', message.content):
+                print("Discord/Telegram link detected - pass")
+                return
+            else:
+                print("Not a Discord/Telegram Link - block")
                 await message.channel.send("{}, tu as posté dans le mauvais salon - ce salon est réservé aux liens "
                                            "Discord et Telegram, message supprimé.".format(message.author.mention))
                 await message.delete()
+                return
         if message.channel.name not in forbidden_links_channels:
             print("Link is posted in whitelisted channel - Skipping")
             return
@@ -720,74 +729,97 @@ def get_time():
     utcmoment_naive = datetime.utcnow()
     utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
     timezones = ['Pacific/Tahiti', 'America/Los_Angeles', 'America/Cayenne', 'Europe/Paris', 'Australia/Sydney']
-    res = "```"
+
+    embed = discord.Embed(title="Heure dans le monde", url="https://24timezones.com/horloge_mondiale.php",
+                          description="En ce moment, il est :")
     for tz in timezones:
         local_datetime = utcmoment.astimezone(pytz.timezone(tz))
-        res += local_datetime.strftime("%Y-%m-%d    %H:%M    [{}]\n".format(tz))
+        embed.add_field(name=tz,
+                        value=local_datetime.strftime("%Y-%m-%d    %H:%M    [{}]\n".format(tz)),
+                        inline=False)
 
-    res += "```"
-    return res
+    return embed
 
 
 @bot.command()
 async def time(ctx):
-    await ctx.send(get_time())
+    await ctx.send(embed=get_time())
 
 
 @bot.command()
 async def dlive(ctx):
-    await ctx.send("https://dlive.tv/Radio-LoupDi")
+    embed = discord.Embed(title="Dlive", url="https://dlive.tv/Radio-LoupDi")
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def youtube(ctx):
-    await ctx.send("https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A")
+    embed = discord.Embed(title="Youtube", url="https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A")
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def odysee(ctx):
-    await ctx.send("https://odysee.com/@RadioLoupDi:9")
+    embed = discord.Embed(title="Odysee", url="https://odysee.com/@RadioLoupDi:9")
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def telegram(ctx):
-    await ctx.send("https://t.me/RadioLoupDi")
+    embed = discord.Embed(title="Telegram", url="https://t.me/RadioLoupDi")
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def tipeee(ctx):
-    await ctx.send("https://fr.tipeee.com/loup-divergent")
+    embed = discord.Embed(title="Tipeee", url="https://fr.tipeee.com/loup-divergent")
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def serveur(ctx):
-    await ctx.send("https://discord.gg/7sbB6xAJtq")
+    embed = discord.Embed(title="Discord", url="https://discord.gg/7sbB6xAJtq")
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def carte(ctx):
-    await ctx.send("http://u.osmfr.org/m/660805")
+    embed = discord.Embed(title="Carte", url="http://u.osmfr.org/m/660805")
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def loupdi(ctx):
-    await ctx.send("```DLive``` https://dlive.tv/Radio-LoupDi "
-                   "```YouTube``` https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A "
-                   "```Odysee``` https://odysee.com/@RadioLoupDi:9 "
-                   "```Telegram``` https://t.me/RadioLoupDi "
-                   "```Tipeee``` https://fr.tipeee.com/loup-divergent "
-                   "```Discord``` https://discord.gg/7sbB6xAJtq "
-                   "```Carte``` http://u.osmfr.org/m/660805 ")
+    await dlive(ctx)
+    await youtube(ctx)
+    await odysee(ctx)
+    await telegram(ctx)
+    await tipeee(ctx)
+    await serveur(ctx)
+    await carte(ctx)
 
 
 @bot.command()
 async def annonce(ctx, message):
     print("Tentative d'envoi: '{}'".format(message))
-    for channel in bot.get_all_channels():
-        try:
-            await channel.send("{}".format(message))
-        except AttributeError:
-            pass
+    text_channels = []
+    for server in bot.guilds:
+        for channel in server.channels:
+            if str(channel.type) == 'text':
+                text_channels.append(channel)
+    # text_channels = bot.get_all_channels()
+    for channel in text_channels:
+        print("- Trying to send '{}' in #{}".format(message, channel))
+        # await channel.send("{}".format(message))
+
+
+@bot.command()
+async def annonce_regions(ctx, message):
+    print("Tentative d'envoi pour les régions: '{}'".format(message))
+    regions = get(ctx.guild.categories, id=777638347799265330).text_channels
+    for region in regions:
+        print("- Trying to send '{}' in #{}".format(message, region))
+        await region.send(message)
 
 
 @bot.command()
@@ -867,8 +899,8 @@ async def purge(ctx):
     """
     role_purge = discord.utils.get(ctx.guild.roles, name=default_role)
     count_kick = 0
-    embed = discord.Embed(title="Purger le '{}' ? *(Oui / Warn / Non) * ".format(default_role),
-                          description="Oui/Warn/Non")
+    embed = discord.Embed(title="Purger le '{}' ?".format(default_role),
+                          description="Réponses possibles: Oui/Warn/Non")
     await ctx.send(embed=embed)
     msg = await bot.wait_for('message', check=lambda message: message.author == ctx.author)
 
@@ -916,7 +948,7 @@ async def on_message(message):
     await link_actions(message)
 
     if "quelle heure" in message.content.lower():
-        await message.channel.send(get_time())
+        await message.channel.send(embed=get_time())
 
     if "crepe" in message.content.lower() or \
             "crêpe" in message.content.lower():
