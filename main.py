@@ -1,7 +1,10 @@
+import asyncio
 import logging
 import random
 import re
 from datetime import datetime
+from static import dict_department_region
+from static import dict_countries_alphacodes
 
 import discord
 import pytz
@@ -40,370 +43,16 @@ link_only_channels = {
     "liens-discord-et-blogs-telegram"
 }
 
-dict_department_region = {
-    "01": "Auvergne-Rhône-Alpes",
-    "02": "Hauts-de-France",
-    "03": "Auvergne-Rhône-Alpes",
-    "04": "Provence-Alpes-Côte d'Azur",
-    "05": "Provence-Alpes-Côte d'Azur",
-    "06": "Provence-Alpes-Côte d'Azur",
-    "07": "Auvergne-Rhône-Alpes",
-    "08": "Grand Est",
-    "09": "Occitanie",
-    "10": "Grand Est",
-    "11": "Occitanie",
-    "12": "Occitanie",
-    "13": "Provence-Alpes-Côte d'Azur",
-    "14": "Normandie",
-    "15": "Auvergne-Rhône-Alpes",
-    "16": "Nouvelle-Aquitaine",
-    "17": "Nouvelle-Aquitaine",
-    "18": "Centre-Val de Loire",
-    "19": "Nouvelle-Aquitaine",
-    "2A": "Corse",
-    "2B": "Corse",
-    "21": "Bourgogne-Franche-Comté",
-    "22": "Bretagne",
-    "23": "Nouvelle-Aquitaine",
-    "24": "Nouvelle-Aquitaine",
-    "25": "Bourgogne-Franche-Comté",
-    "26": "Auvergne-Rhône-Alpes",
-    "27": "Normandie",
-    "28": "Centre-Val de Loire",
-    "29": "Bretagne",
-    "30": "Occitanie",
-    "31": "Occitanie",
-    "32": "Occitanie",
-    "33": "Nouvelle-Aquitaine",
-    "34": "Occitanie",
-    "35": "Bretagne",
-    "36": "Centre-Val de Loire",
-    "37": "Centre-Val de Loire",
-    "38": "Auvergne-Rhône-Alpes",
-    "39": "Bourgogne-Franche-Comté",
-    "40": "Nouvelle-Aquitaine",
-    "41": "Centre-Val de Loire",
-    "42": "Auvergne-Rhône-Alpes",
-    "43": "Auvergne-Rhône-Alpes",
-    "44": "Pays de la Loire",
-    "45": "Centre-Val de Loire",
-    "46": "Occitanie",
-    "47": "Nouvelle-Aquitaine",
-    "48": "Occitanie",
-    "49": "Pays de la Loire",
-    "50": "Normandie",
-    "51": "Grand Est",
-    "52": "Grand Est",
-    "53": "Pays de la Loire",
-    "54": "Grand Est",
-    "55": "Grand Est",
-    "56": "Bretagne",
-    "57": "Grand Est",
-    "58": "Bourgogne-Franche-Comté",
-    "59": "Hauts-de-France",
-    "60": "Hauts-de-France",
-    "61": "Normandie",
-    "62": "Hauts-de-France",
-    "63": "Auvergne-Rhône-Alpes",
-    "64": "Nouvelle-Aquitaine",
-    "65": "Occitanie",
-    "66": "Occitanie",
-    "67": "Grand Est",
-    "68": "Grand Est",
-    "69": "Auvergne-Rhône-Alpes",
-    "70": "Bourgogne-Franche-Comté",
-    "71": "Bourgogne-Franche-Comté",
-    "72": "Pays de la Loire",
-    "73": "Auvergne-Rhône-Alpes",
-    "74": "Auvergne-Rhône-Alpes",
-    "75": "Île-de-France",
-    "76": "Normandie",
-    "77": "Île-de-France",
-    "78": "Île-de-France",
-    "79": "Nouvelle-Aquitaine",
-    "80": "Hauts-de-France",
-    "81": "Occitanie",
-    "82": "Occitanie",
-    "83": "Provence-Alpes-Côte d'Azur",
-    "84": "Provence-Alpes-Côte d'Azur",
-    "85": "Pays de la Loire",
-    "86": "Nouvelle-Aquitaine",
-    "87": "Nouvelle-Aquitaine",
-    "88": "Grand Est",
-    "89": "Bourgogne-Franche-Comté",
-    "90": "Bourgogne-Franche-Comté",
-    "91": "Île-de-France",
-    "92": "Île-de-France",
-    "93": "Île-de-France",
-    "94": "Île-de-France",
-    "95": "Île-de-France",
-    "971": "Régions d'outre-mer",
-    "972": "Régions d'outre-mer",
-    "973": "Régions d'outre-mer",
-    "974": "Régions d'outre-mer",
-    "975": "Régions d'outre-mer",
-    "976": "Régions d'outre-mer",
-    "977": "Régions d'outre-mer",
-    "978": "Régions d'outre-mer",
-    "984": "Régions d'outre-mer",
-    "986": "Régions d'outre-mer",
-    "987": "Régions d'outre-mer",
-    "988": "Régions d'outre-mer",
-    "989": "Régions d'outre-mer"
-}
-dict_countries_alphacodes = {
-    "ABW": "Aruba",
-    "AFG": "Afghanistan",
-    "AGO": "Angola",
-    "AIA": "Anguilla",
-    "ALA": "Åland",
-    "ALB": "Albanie",
-    "AND": "Andorre",
-    "ANT": "Antilles néerlandaises",
-    "ARE": "Émirats arabes unis",
-    "ARG": "Argentine",
-    "ARM": "Arménie",
-    "ASM": "Samoa américaines",
-    "ATA": "Antarctique",
-    "ATF": "Terres australes françaises",
-    "ATG": "Antigua-et-Barbuda",
-    "AUS": "Australie",
-    "AUT": "Autriche",
-    "AZE": "Azerbaïdjan",
-    "BDI": "Burundi",
-    "BEL": "Belgique",
-    "BEN": "Bénin",
-    "BFA": "Burkina Faso",
-    "BGD": "Bangladesh",
-    "BGR": "Bulgarie",
-    "BHR": "Bahreïn",
-    "BHS": "Bahamas",
-    "BIH": "Bosnie-Herzégovine",
-    "BLM": "Saint-Barthélemy",
-    "BLR": "Bélarus",
-    "BLZ": "Belize",
-    "BMU": "Bermudes",
-    "BOL": "Bolivie",
-    "BRA": "Brésil",
-    "BRB": "Barbade",
-    "BRN": "Brunéi Darussalam",
-    "BTN": "Bhoutan",
-    "BVT": "Bouvet",
-    "BWA": "Botswana",
-    "CAF": "République centrafricaine",
-    "CAN": "Canada",
-    "CCK": "Îles Cocos",
-    "CHE": "Suisse",
-    "CHL": "Chili",
-    "CHN": "Chine",
-    "CIV": "Côte d'Ivoire",
-    "CMR": "Cameroun",
-    "COD": "Congo (RDC)",
-    "COG": "Congo",
-    "COK": "Îles Cook",
-    "COL": "Colombie",
-    "COM": "Comores",
-    "CPV": "Cap-Vert",
-    "CRI": "Costa Rica",
-    "CUB": "Cuba",
-    "CXR": "Île Christmas",
-    "CYM": "Îles Caïmans",
-    "CYP": "Chypre",
-    "CZE": "Tchéquie",
-    "DEU": "Allemagne",
-    "DJI": "Djibouti",
-    "DMA": "Dominique",
-    "DNK": "Danemark",
-    "DOM": "République dominicaine",
-    "DZA": "Algérie",
-    "ECU": "Équateur",
-    "EGY": "Égypte",
-    "ERI": "Érythrée",
-    "ESH": "Sahara occidental",
-    "ESP": "Espagne",
-    "EST": "Estonie",
-    "ETH": "Éthiopie",
-    "FIN": "Finlande",
-    "FJI": "Fidji",
-    "FLK": "Îles Malouines",
-    "FRO": "Îles Féroé",
-    "FSM": "Micronésie",
-    "GAB": "Gabon",
-    "GBR": "Royaume-Uni",
-    "GEO": "Géorgie",
-    "GGY": "Guernesey",
-    "GHA": "Ghana",
-    "GIB": "Gibraltar",
-    "GIN": "Guinée",
-    "GLP": "Guadeloupe",
-    "GMB": "Gambie",
-    "GNB": "Guinée-Bissau",
-    "GNQ": "Guinée équatoriale",
-    "GRC": "Grèce",
-    "GRD": "Grenade",
-    "GRL": "Groenland",
-    "GTM": "Guatemala",
-    "GUF": "Guyane française",
-    "GUM": "Guam",
-    "GUY": "Guyana",
-    "HKG": "Hong Kong",
-    "HMD": "Îles Heard et McDonald",
-    "HND": "Honduras",
-    "HRV": "Croatie",
-    "HTI": "Haïti",
-    "HUN": "Hongrie",
-    "IDN": "Indonésie",
-    "IMN": "Île de Man",
-    "IND": "Indie",
-    "IOT": "Territoire britannique de l'océan Indien",
-    "IRL": "Irlande",
-    "IRN": "Iran",
-    "IRQ": "Irak",
-    "ISL": "Islande",
-    "ISR": "Israël",
-    "ITA": "Italie",
-    "JAM": "Jamaïque",
-    "JEY": "Jersey",
-    "JOR": "Jordanie",
-    "JPN": "Japon",
-    "KAZ": "Kazakhstan",
-    "KEN": "Kenya",
-    "KGZ": "Kirghizistan",
-    "KHM": "Cambodge",
-    "KIR": "Kiribati",
-    "KNA": "Saint-Kitts-et-Nevis",
-    "KOR": "Corée du Sud",
-    "KWT": "Koweït",
-    "LAO": "Laos",
-    "LBN": "Liban",
-    "LBR": "Libéria",
-    "LBY": "Libye",
-    "LCA": "Sainte-Lucie",
-    "LIE": "Liechtenstein",
-    "LKA": "Sri Lanka",
-    "LSO": "Lesotho",
-    "LTU": "Lituanie",
-    "LUX": "Luxembourg",
-    "LVA": "Lettonie",
-    "MAC": "Macao",
-    "MAF": "Saint-Martin",
-    "MAR": "Maroc",
-    "MCO": "Monaco",
-    "MDA": "Moldova",
-    "MDG": "Madagascar",
-    "MDV": "Maldives",
-    "MEX": "Mexique",
-    "MHL": "Îles Marshall",
-    "MKD": "Macédoine du Nord",
-    "MLI": "Mali",
-    "MLT": "Malte",
-    "MMR": "Myanmar",
-    "MNE": "Monténégro",
-    "MNG": "Mongolie",
-    "MNP": "Îles Mariannes du Nord",
-    "MOZ": "Mozambique",
-    "MRT": "Mauritanie",
-    "MSR": "Montserrat",
-    "MTQ": "Martinique",
-    "MUS": "Maurice",
-    "MWI": "Malawi",
-    "MYS": "Malaisie",
-    "MYT": "Mayotte",
-    "NAM": "Namibie",
-    "NCL": "Nouvelle-Calédonie",
-    "NER": "Niger",
-    "NFK": "île Norfolk",
-    "NGA": "Nigéria",
-    "NIC": "Nicaragua",
-    "NIU": "Niue",
-    "NLD": "Pays-Bas",
-    "NOR": "Norvège",
-    "NPL": "Népal",
-    "NRU": "Nauru",
-    "NZL": "Nouvelle-Zélande",
-    "OMN": "Oman",
-    "PAK": "Pakistan",
-    "PAN": "Panama",
-    "PCN": "Pitcairn",
-    "PER": "Pérou",
-    "PHL": "Philippines",
-    "PLW": "Palaos",
-    "PNG": "Papouasie-Nouvelle-Guinée",
-    "POL": "Pologne",
-    "PRI": "Porto Rico",
-    "PRK": "Corée du Nord",
-    "PRT": "Portugal",
-    "PRY": "Paraguay",
-    "PSE": "Palestine",
-    "PYF": "Polynésie française",
-    "QAT": "Qatar",
-    "REU": "Réunion",
-    "ROU": "Roumanie",
-    "RUS": "Russie",
-    "RWA": "Rwanda",
-    "SAU": "Arabie saoudite",
-    "SDN": "Soudan",
-    "SEN": "Sénégal",
-    "SGP": "Singapour",
-    "SGS": "Géorgie du Sud-et-les Îles Sandwich du Sud",
-    "SHN": "Sainte-Hélène, Ascension et Tristan da Cunha",
-    "SJM": "Svalbard et l'Île Jan Mayen",
-    "SLB": "Salomon",
-    "SLE": "Sierra Leone",
-    "SLV": "Salvador",
-    "SMR": "Saint-Marin",
-    "SOM": "Somalie",
-    "SPM": "Saint-Pierre-et-Miquelon",
-    "SRB": "Serbie",
-    "STP": "Sao Tomé-et-Principe",
-    "SUR": "Suriname",
-    "SVK": "Slovaquie",
-    "SVN": "Slovénie",
-    "SWE": "Suède",
-    "SWZ": "Eswatini",
-    "SYC": "Seychelles",
-    "SYR": "Syrie",
-    "TCA": "Îles Turks et Caïques",
-    "TCD": "Tchad",
-    "TGO": "Togo",
-    "THA": "Thaïlande",
-    "TJK": "Tadjikistan",
-    "TKL": "Tokelau",
-    "TKM": "Turkménistan",
-    "TLS": "Timor-Leste",
-    "TON": "Tonga",
-    "TTO": "Trinité-et-Tobago",
-    "TUN": "Tunisie",
-    "TUR": "Turquie",
-    "TUV": "Tuvalu",
-    "TWN": "Taïwan",
-    "TZA": "Tanzanie",
-    "UGA": "Ouganda",
-    "UKR": "Ukraine",
-    "UMI": "Îles mineures éloignées des États-Unis",
-    "URY": "Uruguay",
-    "USA": "États-Unis",
-    "UZB": "Ouzbékistan",
-    "VAT": "Vatican",
-    "VCT": "Saint-Vincent-et-les Grenadines",
-    "VEN": "Venezuela",
-    "VGB": "Îles Vierges britanniques",
-    "VIR": "Îles Vierges des États-Unis",
-    "VNM": "Viet Nam",
-    "VUT": "Vanuatu",
-    "WLF": "Wallis-et-Futuna",
-    "WSM": "Samoa",
-    "YEM": "Yémen",
-    "ZAF": "Afrique du Sud",
-    "ZMB": "Zambie",
-    "ZWE": "Zimbabwe",
-    "QUE": "Québec",
-    "CH": "Suisse"
-}
 region_roles = set(dict_department_region.values())
 region_roles.add(default_role)
 region_roles.add(expat_role_name)
 country_roles = set(dict_countries_alphacodes.values())
+
+
+async def temp_post(message: discord.Message, embed: discord.Embed):
+    msg = await message.channel.send(embed=embed)
+    await asyncio.sleep(5)
+    await msg.delete()
 
 
 def role_exists(rolename, server: discord.Guild):
@@ -567,12 +216,13 @@ async def nickname_actions(message: discord.Message):
             output = "Je n'ai pas demandé un code postal, j'ai demandé un numéro de département. Si votre département" \
                      " est '{}' - veuillez taper '{}', merci.".format(dept_guess, dept_guess)
             embed = discord.Embed(title="Erreur", description="➥ {}".format(output))
-            await message.channel.send(embed=embed)
-        elif any(substring in message.content.lower() for substring in ["salut", "bonjour", "coucou", "hello"]):
+            await temp_post(message, embed)
+        elif any(substring in message.content.lower() for substring in ["salut", "bonjour",
+                                                                        "coucou", "hello", "bonsoir"]):
             output = "J'apprécie la politesse, mais vous parlez à un robot. La consigne est claire: numéro de " \
                      "département ou code pays. **RIEN. D'AUTRE.**"
             embed = discord.Embed(title="Erreur", description="➥ {}".format(output))
-            await message.channel.send(embed=embed)
+            await temp_post(message, embed)
         # Finally, prompt again and harass
         else:
             output = "{} - SVP, veuillez entrer votre numéro de département ou code pays à 3 lettres " \
@@ -582,7 +232,7 @@ async def nickname_actions(message: discord.Message):
                                                     "peut vous lire, et vous n'avez pas accès au reste des salons. Si "
                                                     "vous restez trop longtemps sans répondre, vous serez "
                                                     "éjecté.".format(message.author.mention))
-            await message.channel.send(embed=embed)
+            await temp_post(message, embed)
 
             mp_embed = discord.Embed(title="Salut {} :wave: !".format(message.author.name),
                                      description="Je suis un robot, et j'aide à accueillir les nouveaux.")
@@ -604,6 +254,7 @@ async def nickname_actions(message: discord.Message):
             mp_embed.add_field(name="> Exemples de pseudos **valides**",
                                value="➥ '34 - Marcel', 'DZA Abdel', '987 TahitiBob'".format())
             await message.author.send(embed=mp_embed)
+        await message.delete()
     else:
         await check_roles(member)
 
@@ -748,43 +399,43 @@ async def time(ctx):
 
 @bot.command()
 async def dlive(ctx):
-    embed = discord.Embed(title="Dlive", url="https://dlive.tv/Radio-LoupDi")
+    embed = discord.Embed(title="Lien Dlive", url="https://dlive.tv/Radio-LoupDi")
     await ctx.send(embed=embed)
 
 
 @bot.command()
 async def youtube(ctx):
-    embed = discord.Embed(title="Youtube", url="https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A")
+    embed = discord.Embed(title="Lien Youtube", url="https://www.youtube.com/channel/UCPQx_gNV37pZCOZ1CaHwq2A")
     await ctx.send(embed=embed)
 
 
 @bot.command()
 async def odysee(ctx):
-    embed = discord.Embed(title="Odysee", url="https://odysee.com/@RadioLoupDi:9")
+    embed = discord.Embed(title="Lien Odysee", url="https://odysee.com/@RadioLoupDi:9")
     await ctx.send(embed=embed)
 
 
 @bot.command()
 async def telegram(ctx):
-    embed = discord.Embed(title="Telegram", url="https://t.me/RadioLoupDi")
+    embed = discord.Embed(title="Lien Telegram", url="https://t.me/RadioLoupDi")
     await ctx.send(embed=embed)
 
 
 @bot.command()
 async def tipeee(ctx):
-    embed = discord.Embed(title="Tipeee", url="https://fr.tipeee.com/loup-divergent")
+    embed = discord.Embed(title="Lien Tipeee", url="https://fr.tipeee.com/loup-divergent")
     await ctx.send(embed=embed)
 
 
 @bot.command()
 async def serveur(ctx):
-    embed = discord.Embed(title="Discord", url="https://discord.gg/7sbB6xAJtq")
+    embed = discord.Embed(title="Lien Discord", url="https://discord.gg/7sbB6xAJtq")
     await ctx.send(embed=embed)
 
 
 @bot.command()
 async def carte(ctx):
-    embed = discord.Embed(title="Carte", url="http://u.osmfr.org/m/660805")
+    embed = discord.Embed(title="Lien de la Carte", url="http://u.osmfr.org/m/660805")
     await ctx.send(embed=embed)
 
 
