@@ -319,6 +319,10 @@ async def on_ready():
 async def on_member_join(member: discord.Member):
     await member.send(f":wave: Bienvenue sur le serveur ! ")
     await member.add_roles(discord.utils.get(member.guild.roles, name=default_role))
+    # Every (1) day(s)
+    await asyncio.sleep(60*60*24*1)
+    if not has_bypass_role(member) and not has_valid_nick(member):
+        await member.kick(reason="Pseudo invalide - kick automatique")
 
 
 @bot.command()
