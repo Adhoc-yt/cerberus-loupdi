@@ -51,7 +51,7 @@ country_roles = set(dict_countries_alphacodes.values())
 
 async def temp_post(message: discord.Message, embed: discord.Embed):
     msg = await message.channel.send(embed=embed)
-    await asyncio.sleep(5)
+    await asyncio.sleep(10)
     await msg.delete()
 
 
