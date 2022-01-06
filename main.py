@@ -272,11 +272,7 @@ async def link_actions(message: discord.Message):
     if detect_url(message):
         if any(domain in message.content.lower() for domain in ['discord.gg', 't.me']):
             print("Tgram or Discord server link detected")
-            if message.channel.name != discord_links_channel:
-                await message.channel.send("{}, merci de poster les liens Discord et Telegram dans le salon approprié,"
-                                           " <#{}> - message supprimé.".format(message.author.mention,
-                                                                               '778014952757526549'))
-                await message.delete()
+
     # Lien dans un salon pas approprié
     if detect_url(message) and not re.findall('discord.com', message.content):
         print("Link detected in '{}'".format(message.channel))
@@ -295,12 +291,7 @@ async def link_actions(message: discord.Message):
             print("Link has been posted by someone with a bypass role - Skipping")
         else:
             await message.channel.send("{}, n'oublie pas de poster également ce genre de lien dans la catégorie "
-                                       "appropriée - message supprimé.".format(message.author.mention))
-            await message.author.send("Pour info, la règle concernant les liens a été établie le 5 novembre 2020, "
-                                      "https://discord.com/channels/632963159619141653/774140334006730782"
-                                      "/774141383803273269 - et cette règle a du être renforcée le 19 mai 2021, "
-                                      "https://discord.com/channels/632963159619141653/774140334006730782"
-                                      "/844824472153489458 - Merci de lire le règlement et de jouer le jeu! :wave:")
+                                       "appropriée :wave:".format(message.author.mention))
 
 
 @bot.event
