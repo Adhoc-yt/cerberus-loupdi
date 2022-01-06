@@ -289,9 +289,6 @@ async def link_actions(message: discord.Message):
                 return
         if has_bypass_role(message.author):
             print("Link has been posted by someone with a bypass role - Skipping")
-        else:
-            await message.channel.send("{}, n'oublie pas de poster également ce genre de lien dans la catégorie "
-                                       "appropriée :wave:".format(message.author.mention))
 
 
 @bot.event
