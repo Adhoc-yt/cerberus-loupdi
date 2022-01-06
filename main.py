@@ -31,10 +31,6 @@ ignored_roles = {
     "Intervenant",
     "Streamer"
 }
-forbidden_links_channels = {
-    "la-tanière",
-    "bienvenue"
-}
 discord_links_channel = "liens-discord-et-blogs-telegram"
 link_only_channels = {
     "partage-de-vidéos",
@@ -295,10 +291,7 @@ async def link_actions(message: discord.Message):
                                            "Discord et Telegram, message supprimé.".format(message.author.mention))
                 await message.delete()
                 return
-        if message.channel.name not in forbidden_links_channels:
-            print("Link is posted in whitelisted channel - Skipping")
-            return
-        elif has_bypass_role(message.author):
+        if has_bypass_role(message.author):
             print("Link has been posted by someone with a bypass role - Skipping")
         else:
             await message.delete()
