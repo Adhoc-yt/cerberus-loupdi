@@ -251,7 +251,6 @@ async def nickname_actions(message: discord.Message):
             mp_embed.add_field(name="> Exemples de pseudos **valides**",
                                value="➥ '34 - Marcel', 'DZA Abdel', '987 TahitiBob'".format())
             await message.author.send(embed=mp_embed)
-        await message.delete()
     else:
         await check_roles(member)
 
