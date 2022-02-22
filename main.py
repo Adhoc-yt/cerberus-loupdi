@@ -469,14 +469,17 @@ async def selfname(ctx, nickname):
 async def radio(ctx):
     radio_url = "http://51.68.127.2:8000/RadioLibre"
     voice_channel = discord.utils.get(ctx.guild.voice_channels, id=833183437862862858)
-    await voice_channel.connect()
+    try:
+        await voice_channel.connect()
 
-    voice_client: discord.VoiceClient = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    audio_source = discord.FFmpegPCMAudio(radio_url)
-    if not voice_client.is_playing():
-        voice_client.play(audio_source, after=None)
+        voice_client: discord.VoiceClient = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+        audio_source = discord.FFmpegPCMAudio(radio_url)
+        if not voice_client.is_playing():
+            voice_client.play(audio_source, after=None)
 
-    embed = discord.Embed(title="Radio", description="➥ Lecture {}".format(voice_channel.name))
+        embed = discord.Embed(title="Radio", description="➥ Lecture {}".format(voice_channel.name))
+    except discord.errors.ClientException as e:
+        embed = discord.Embed(title="Erreur", description="➥ {}".format(e))
     await ctx.send(embed=embed)
 
 
