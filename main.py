@@ -21,6 +21,7 @@ intents.members = True
 bot = commands.Bot(command_prefix="c!", intents=intents)
 
 # Custom parameters
+FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn'}
 default_role = "Tunnel de la Taniere"
 expat_role_name = "Expatriés"
 admin_role = "Adminitrateur"
@@ -461,6 +462,21 @@ async def annonce_regions(ctx, message):
 async def selfname(ctx, nickname):
     embed = discord.Embed(title="Changement de pseudo", description="➥ {}".format(nickname))
     await ctx.guild.get_member(bot.user.id).edit(nick=nickname)
+    await ctx.send(embed=embed)
+
+
+@bot.command()
+async def radio(ctx):
+    radio_url = "http://51.68.127.2:8000/RadioLibre"
+    voice_channel = discord.utils.get(ctx.guild.voice_channels, id=833183437862862858)
+    await voice_channel.connect()
+
+    voice_client: discord.VoiceClient = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    audio_source = discord.FFmpegPCMAudio(radio_url)
+    if not voice_client.is_playing():
+        voice_client.play(audio_source, after=None)
+
+    embed = discord.Embed(title="Radio", description="➥ Lecture {}".format(voice_channel.name))
     await ctx.send(embed=embed)
 
 
