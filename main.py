@@ -48,7 +48,7 @@ country_roles = set(dict_countries_alphacodes.values())
 
 async def temp_post(message: discord.Message, embed: discord.Embed):
     msg = await message.channel.send(embed=embed)
-    await asyncio.sleep(8)
+    await asyncio.sleep(60)
     await msg.delete()
 
 
@@ -240,17 +240,13 @@ async def nickname_actions(message: discord.Message):
                                      "région.",
                                inline=False)
             mp_embed.add_field(name="Sur le serveur (pas ici)",
-                               value="➥ Veuillez taper un message contenant seulement "
+                               value="➥ Veuillez taper un message __sur le serveur__ contenant seulement "
                                      "votre **numéro de département** Français",
                                inline=False)
             mp_embed.add_field(name="Si vous n'êtes pas en France",
                                value="➥ Veuillez taper un message contenant seulement votre code pays à 3 "
                                      "lettres, par exemple 'CHE' la Suisse, 'DZA' pour l'Algérie, etc.",
                                inline=False)
-            mp_embed.add_field(name="> Exemples de pseudos **invalides**",
-                               value="➥ '34Marcel', 'Algerie Abdel', 'BobDu987'")
-            mp_embed.add_field(name="> Exemples de pseudos **valides**",
-                               value="➥ '34 - Marcel', 'DZA Abdel', '987 TahitiBob'".format())
             await message.author.send(embed=mp_embed)
     else:
         await check_roles(member)
