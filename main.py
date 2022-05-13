@@ -399,7 +399,9 @@ async def odysee(ctx):
 
 @bot.command()
 async def telegram(ctx):
-    embed = discord.Embed(title="Lien Telegram", url="https://t.me/RadioLoupDi")
+    embed = discord.Embed(title="Lien Telegram La Tanière", url="https://t.me/RadioLoupDi")
+    await ctx.send(embed=embed)
+    embed = discord.Embed(title="Lien Telegram RadioLoupDi Clavardages", url="https://t.me/RadioLoupDiClavardages")
     await ctx.send(embed=embed)
 
 
