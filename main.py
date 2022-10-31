@@ -419,7 +419,7 @@ async def serveur(ctx):
 
 @bot.command()
 async def carte(ctx):
-    embed = discord.Embed(title="Lien de la Carte", url="http://u.osmfr.org/m/660805")
+    embed = discord.Embed(title="Lien de la Carte", url="http://u.osmfr.org/m/827348/")
     await ctx.send(embed=embed)
 
 
