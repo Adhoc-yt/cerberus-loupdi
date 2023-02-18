@@ -16,7 +16,7 @@ logging.basicConfig()
 logging.info("Starting Logging...")
 
 # Config bot
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.members = True
 bot = commands.Bot(command_prefix="c!", intents=intents)
 
