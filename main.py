@@ -299,7 +299,7 @@ async def on_member_join(member: discord.Member):
     await member.send(f":wave: Bienvenue sur le serveur ! ")
     await member.add_roles(discord.utils.get(member.guild.roles, name=default_role))
     # Every (1) day(s)
-    await asyncio.sleep(60*60*24*1)
+    await asyncio.sleep(60 * 60 * 24 * 1)
     if not has_bypass_role(member) and not has_valid_nick(member):
         await member.kick(reason="Pseudo invalide - kick automatique")
 
@@ -354,6 +354,104 @@ def recette_crepe():
                     inline=False)
     embed.add_field(name="6", value="Laissez cuire environ une minute de ce côté et la crêpe est prête.", inline=False)
     return embed
+
+
+def gauchiste_mdr():
+    reply = [
+        "Haha, il a dit 'gauchiste' !",
+        "C'est incroyable comment 'gauchiste' peut déclencher le fou rire !",
+        "Je ne peux pas m'empêcher de rire à chaque fois que j'entends 'gauchiste' !",
+        "'Gauchiste'... Hahaha, désolé, je ne peux pas m'arrêter de rire !",
+        "La façon dont il a prononcé 'gauchiste' m'a vraiment fait rire !",
+        "Est-ce que quelqu'un a dit 'gauchiste' ? Haha !",
+        "Oh là là, 'gauchiste' a encore réussi à me faire rire !",
+        "Je ne sais pas pourquoi, mais 'gauchiste' me fait toujours rire !",
+        "Quand 'gauchiste' est dit, je ne peux m'empêcher de rire !",
+        "Haha, 'gauchiste', vraiment ?",
+        "Rien de tel que le mot 'gauchiste' pour déclencher un fou rire !",
+        "C'est incroyable à quel point 'gauchiste' est drôle !",
+        "L'ironie du mot 'gauchiste' me fait rire !",
+        "Je ne m'attendais pas à rire autant en entendant 'gauchiste' !",
+        "Il a dit 'gauchiste' ? Ahaha !",
+        "Je suis désolé, mais 'gauchiste' me fait rire à chaque fois !",
+        "'Gauchiste' ! Haha, vraiment ?",
+        "Pourquoi est-ce que 'gauchiste' est si drôle ?",
+        "'Gauchiste'... Ça a toujours cet effet comique sur moi !",
+        "Le mot 'gauchiste' ne manque jamais de me faire rire !",
+        "C'est fou à quel point 'gauchiste' est hilarant !",
+        "Oh non, il a dit 'gauchiste' !",
+        "'Gauchiste' est vraiment un mot drôle !",
+        "Je ne peux pas m'empêcher de rire à chaque fois que j'entends 'gauchiste' !",
+        "Haha, 'gauchiste' est-il vraiment sorti de sa bouche ?",
+        "C'est incroyable comment 'gauchiste' peut déclencher le rire !",
+        "'Gauchiste'... Hahaha, désolé, je ne peux pas m'arrêter de rire !",
+        "La façon dont il a prononcé 'gauchiste' m'a vraiment fait rire !",
+        "Est-ce que quelqu'un a dit 'gauchiste' ? Haha !",
+        "Oh là là, 'gauchiste' a encore réussi à me faire rire !",
+        "Je ne sais pas pourquoi, mais 'gauchiste' me fait toujours rire !",
+        "Quand 'gauchiste' est dit, je ne peux m'empêcher de rire !",
+        "Haha, 'gauchiste', vraiment ?",
+        "Rien de tel que le mot 'gauchiste' pour déclencher un fou rire !",
+        "C'est incroyable à quel point 'gauchiste' est drôle !",
+        "L'ironie du mot 'gauchiste' me fait rire !",
+        "Je ne m'attendais pas à rire autant en entendant 'gauchiste' !",
+        "Il a dit 'gauchiste' ? Ahaha !",
+        "Je suis désolé, mais 'gauchiste' me fait rire à chaque fois !",
+        "'Gauchiste' ! Haha, vraiment ?",
+        "Pourquoi est-ce que 'gauchiste' est si drôle ?",
+        "'Gauchiste'... Ça a toujours cet effet comique sur moi !",
+        "Le mot 'gauchiste' ne manque jamais de me faire rire !",
+        "C'est fou à quel point 'gauchiste' est hilarant !",
+        "Oh non, il a dit 'gauchiste' !",
+        "'Gauchiste' est vraiment un mot drôle !",
+        "Je ne peux pas m'empêcher de rire à chaque fois que j'entends 'gauchiste' !",
+        "Haha, 'gauchiste' est-il vraiment sorti de sa bouche ?",
+        "C'est incroyable comment 'gauchiste' peut déclencher le rire !",
+        "'Gauchiste'... Hahaha, désolé, je ne peux pas m'arrêter de rire !",
+        "La façon dont il a prononcé 'gauchiste' m'a vraiment fait rire !",
+        "Est-ce que quelqu'un a dit 'gauchiste' ? Haha !",
+        "Oh là là, 'gauchiste' a encore réussi à me faire rire !",
+        "Je ne sais pas pourquoi, mais 'gauchiste' me fait toujours rire !",
+        "Quand 'gauchiste' est dit, je ne peux m'empêcher de rire !",
+        "Haha, 'gauchiste', vraiment ?",
+        "Rien de tel que le mot 'gauchiste' pour déclencher un fou rire !",
+        "C'est incroyable à quel point 'gauchiste' est drôle !",
+        "L'ironie du mot 'gauchiste' me fait rire !",
+        "Je ne m'attendais pas à rire autant en entendant 'gauchiste' !",
+        "Il a dit 'gauchiste' ? Ahaha !",
+        "Je suis désolé, mais 'gauchiste' me fait rire à chaque fois !",
+        "'Gauchiste' ! Haha, vraiment ?",
+        "Pourquoi est-ce que 'gauchiste' est si drôle ?",
+        "'Gauchiste'... Ça a toujours cet effet comique sur moi !",
+        "Le mot 'gauchiste' ne manque jamais de me faire rire !",
+        "C'est fou à quel point 'gauchiste' est hilarant !",
+        "Oh non, il a dit 'gauchiste' !",
+        "'Gauchiste' est vraiment un mot drôle !",
+        "Je ne peux pas m'empêcher de rire à chaque fois que j'entends 'gauchiste' !",
+        "Haha, 'gauchiste' est-il vraiment sorti de sa bouche ?",
+        "C'est incroyable comment 'gauchiste' peut déclencher le rire !",
+        "'Gauchiste'... Hahaha, désolé, je ne peux pas m'arrêter de rire !",
+        "La façon dont il a prononcé 'gauchiste' m'a vraiment fait rire !",
+        "Est-ce que quelqu'un a dit 'gauchiste' ? Haha !",
+        "Oh là là, 'gauchiste' a encore réussi à me faire rire !",
+        "Je ne sais pas pourquoi, mais 'gauchiste' me fait toujours rire !",
+        "Quand 'gauchiste' est dit, je ne peux m'empêcher de rire !",
+        "Haha, 'gauchiste', vraiment ?",
+        "Rien de tel que le mot 'gauchiste' pour déclencher un fou rire !",
+        "C'est incroyable à quel point 'gauchiste' est drôle !",
+        "L'ironie du mot 'gauchiste' me fait rire !",
+        "Je ne m'attendais pas à rire autant en entendant 'gauchiste' !",
+        "Il a dit 'gauchiste' ? Ahaha !",
+        "Je suis désolé, mais 'gauchiste' me fait rire à chaque fois !",
+        "'Gauchiste' ! Haha, vraiment ?",
+        "Pourquoi est-ce que 'gauchiste' est si drôle ?",
+        "'Gauchiste'... Ça a toujours cet effet comique sur moi !",
+        "Le mot 'gauchiste' ne manque jamais de me faire rire !",
+        "C'est fou à quel point 'gauchiste' est hilarant !",
+        "Oh non, il a dit 'gauchiste' !",
+        "'Gauchiste' est vraiment un mot drôle !"
+    ]
+    return random.choice(reply)
 
 
 def get_time():
@@ -612,8 +710,11 @@ async def on_message(message):
             "crêpe" in message.content.lower():
         await message.channel.send(embed=recette_crepe())
 
+    if "gauchiste" in message.content.lower():
+        await message.channel.send(gauchiste_mdr())
+
 
 if __name__ == '__main__':
-    discord_key = open("key.txt", "r").read()
+    discord_key = open("/opt/discord/cerberus-loupdi/key.txt", "r").read()
     bot.run(discord_key)
     print("Bot initialisé")
